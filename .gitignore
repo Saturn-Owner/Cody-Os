@@ -1,0 +1,91 @@
+# ==========================================================================
+# Secrets & credentials — never committed, under any name variation
+# ==========================================================================
+.env
+.env.*
+!.env.example
+!**/.env.example
+!config.example.env
+!**/config.example.env
+local.properties
+keystore/
+*.keystore
+*.jks
+keystore.properties
+gradle.properties.local
+*credentials*
+*secret*
+*device_secret*
+credentials/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.ppk
+known_hosts
+
+
+# ==========================================================================
+# Android / Gradle build output
+# ==========================================================================
+**/build/
+.gradle/
+.kotlin/
+**/.gradle/
+**/.kotlin/
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.cxx/
+
+# ==========================================================================
+# IDE
+# ==========================================================================
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# ==========================================================================
+# Logs, backups, scratch data — may carry device IDs, tokens, personal paths
+# ==========================================================================
+logs/
+*.log
+backups/
+state/
+scratchpad/
+scratch/
+tmp/
+*.tmp
+
+# Python caches / virtualenvs
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+*.pyc
+venv/
+.venv/
+
+# ==========================================================================
+# ROM / firmware / device-unlock artifacts — large binaries, never public
+# ==========================================================================
+*.img
+*.bin
+*.zip
+rom/
+downloads/
+staging/
+recovery/
+amonet/
+amonet-current/
+
+# ==========================================================================
+# OS cruft
+# ==========================================================================
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+# Copy this file to gradle.properties (already gitignored) and fill in your
+# own Cody Home Gateway's URLs. Without this file the app still builds, just
+# pointed at an obviously-fake placeholder domain (see app/build.gradle.kts).
+
+CODY_HOME_HTTPS_URL=https://your-domain.example/cody-home
+CODY_HOME_WSS_URL=wss://your-domain.example/cody-home/ws

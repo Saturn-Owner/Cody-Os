@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only manifest overlay, merged only into debug builds. Declares the
+  manifest-registered receiver the overnight LongTermMicMonitor needs so
+  AlarmManager can wake the app even after the process has been killed —
+  see MicLongTermAlarmReceiver's doc comment.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver
+            android:name="com.cody.home.audio.MicLongTermAlarmReceiver"
+            android:exported="false" />
+    </application>
+</manifest>
