@@ -32,7 +32,7 @@ android {
         minSdk = 30
         targetSdk = 30
         versionCode = 1
-        versionName = "0.1.0-v1a"
+        versionName = "0.1.0-alpha"
 
         buildConfigField("String", "GATEWAY_HTTPS_URL", "\"$gatewayHttpsUrl\"")
         buildConfigField("String", "GATEWAY_WSS_URL", "\"$gatewayWssUrl\"")

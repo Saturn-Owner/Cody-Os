@@ -6,6 +6,8 @@
 > in Arbeit und noch kein fertiges Produkt. Rechne mit Ecken, fehlenden Teilen
 > und möglichen Breaking Changes. Lies den Abschnitt [Status](#status), bevor du
 > Zeit hineinsteckst.
+>
+> Aktuelle vorbereitete Projektversion: **v0.1.0-alpha**.
 
 CodyOS ist das Gesamtprojekt. Die erste funktionierende Komponente ist
 **Cody Home**: eine Smart-Display-Erfahrung für einen jailbroken Echo Show 5
@@ -77,6 +79,8 @@ Dieses Projekt ist **noch nicht bereit für den allgemeinen Einsatz**. Aktuell g
   [`gateway/`](gateway/).
 - Die Hermes-Integration ist als generischer Erweiterungspunkt enthalten in
   [`integrations/hermes/`](integrations/hermes/).
+- Die vorbereiteten Alpha-Release-Notes stehen in
+  [`docs/RELEASE_NOTES_v0.1.0-alpha.md`](docs/RELEASE_NOTES_v0.1.0-alpha.md).
 
 ## Repository-Struktur
 
@@ -116,6 +120,11 @@ rückgängig machbarer Prozess.
 
 Siehe [`SECURITY.md`](SECURITY.md) für das Authentifizierungsmodell, gespeicherte
 Daten und Hinweise zum Melden von Schwachstellen.
+
+## Changelog
+
+Siehe [`CHANGELOG.md`](CHANGELOG.md) für die vorbereitete Version
+`v0.1.0-alpha`.
 
 ## KI-gestützte Entwicklung
 
