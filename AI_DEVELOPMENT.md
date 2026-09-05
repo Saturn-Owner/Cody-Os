@@ -7,8 +7,9 @@ Dokumentation und Sicherheitsprüfungen wurden unter anderem folgende
 Werkzeuge genutzt:
 
 - ChatGPT
-- Codex / GPT Code
+- Codex
 - Claude Code
+- Gemini
 
 Die KI-Werkzeuge wurden als Entwicklungs- und Review-Unterstützung eingesetzt.
 Sie ersetzen keine menschliche Verantwortung: Änderungen wurden manuell geprüft,
