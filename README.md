@@ -117,6 +117,12 @@ rückgängig machbarer Prozess.
 Siehe [`SECURITY.md`](SECURITY.md) für das Authentifizierungsmodell, gespeicherte
 Daten und Hinweise zum Melden von Schwachstellen.
 
+## KI-gestützte Entwicklung
+
+CodyOS wurde zu großen Teilen mit KI-Unterstützung entwickelt. Details zu
+genutzten Werkzeugen, Einsatzbereichen und manueller Prüfung stehen in
+[`AI_DEVELOPMENT.md`](AI_DEVELOPMENT.md).
+
 ## Lizenz
 
 Apache License 2.0. Siehe [`LICENSE`](LICENSE).
