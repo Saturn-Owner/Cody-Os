@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.sp
 import com.cody.home.state.CodyState
 
 /**
- * Hidden developer panel — every [CodyState] as a tappable button (mock, no
- * Gateway needed), plus a raw text box that goes through the real Gateway
- * `/message` round trip. Opened via 5 quick taps on the Cody character (see
- * MainActivity); gated by BuildConfig.DEBUG at the call site.
+ * Verstecktes Entwicklerpanel: jeder [CodyState] als Button (Mock, ohne
+ * Gateway), plus ein Textfeld für den echten `/message`-Roundtrip. Öffnet sich
+ * über 5 schnelle Taps auf Cody und ist am Aufruf über BuildConfig.DEBUG
+ * geschützt.
  */
 @Composable
 fun DevStatePanel(
@@ -112,4 +112,3 @@ fun DevStatePanel(
         }
     }
 }
-

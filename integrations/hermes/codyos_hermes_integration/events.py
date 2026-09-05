@@ -33,11 +33,11 @@ def map_event_type_to_character_state(event_type: str) -> str:
 
 
 def map_hermes_sse_to_codyos_event(payload: dict[str, Any]) -> dict[str, Any]:
-    """Map a Hermes API SSE payload into a CodyOS/Cody Home event fragment.
+    """Mappt ein Hermes-API-SSE-Payload auf ein CodyOS/Cody-Home-Event.
 
-    This function is intentionally conservative: it forwards known lifecycle,
-    tool, task, approval, model, and notification events without attempting to
-    resolve approvals or alter Hermes safety behavior.
+    Diese Funktion ist bewusst konservativ: Sie reicht bekannte Lifecycle-,
+    Tool-, Task-, Approval-, Model- und Notification-Events weiter, ohne
+    Approvals aufzulösen oder Hermes-Sicherheitsverhalten zu verändern.
     """
     event_type = str(payload.get("event") or payload.get("type") or "")
     if event_type in {

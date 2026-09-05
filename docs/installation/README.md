@@ -1,16 +1,15 @@
-# Installing Cody Home
+# Cody Home installieren
 
-*(To be completed.)* Once the device is running LineageOS (see
-[`../device-setup/`](../device-setup/)), installing Cody Home is:
+*(Noch auszufüllen.)* Sobald LineageOS auf dem Gerät läuft (siehe
+[`../device-setup/`](../device-setup/)), läuft die Cody-Home-Installation grob so:
 
-1. Copy [`../../android/gradle.properties.example`](../../android/gradle.properties.example)
-   to `android/gradle.properties` and fill in your own Gateway's URLs.
-2. Build the APK (`./gradlew assembleDebug` or `assembleRelease` from
+1. Kopiere [`../../android/gradle.properties.example`](../../android/gradle.properties.example)
+   nach `android/gradle.properties` und trage deine eigenen Gateway-URLs ein.
+2. Baue die APK (`./gradlew assembleDebug` oder `assembleRelease` aus
    `android/`).
-3. Install it on the device (`adb install`, or via a recovery-flashable
-   package once one exists).
-4. On first launch, pair the app with your Gateway using a pairing code
-   your Gateway issues.
+3. Installiere sie auf dem Gerät (`adb install`, später ggf. über ein
+   Recovery-flashbares Paket).
+4. Beim ersten Start koppelst du die App mit einem Pairing-Code deines Gateways.
 
-Exact step-by-step instructions, screenshots, and troubleshooting will be
-filled in here.
+Eine genaue Schritt-für-Schritt-Anleitung mit Screenshots und Troubleshooting
+wird ergänzt.

@@ -8,7 +8,7 @@ from .security import PairingStore
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Create one Cody Home pairing code.")
+    parser = argparse.ArgumentParser(description="Erzeugt einen Cody-Home-Pairing-Code.")
     cfg = load_config()
     parser.add_argument("--state-dir", default=str(cfg.state_dir))
     parser.add_argument("--ttl-seconds", type=int, default=cfg.pairing_ttl_seconds)

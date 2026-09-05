@@ -1,24 +1,24 @@
 # CodyOS
 
-**Open, self-hosted AI surfaces for personal agents.**
+**Open-Source KI-Smart-Display-Plattform für persönliche Agenten.**
 
-> **Status: EARLY DEVELOPMENT / EXPERIMENTAL.** This is a hobby project in
-> active progress, not a finished product. Expect rough edges, incomplete
-> pieces, and breaking changes. See [Status](#status) below before you invest
-> time in it.
+> **Status: FRÜHE ENTWICKLUNG / EXPERIMENTELL.** Dieses Hobbyprojekt ist aktiv
+> in Arbeit und noch kein fertiges Produkt. Rechne mit Ecken, fehlenden Teilen
+> und möglichen Breaking Changes. Lies den Abschnitt [Status](#status), bevor du
+> Zeit hineinsteckst.
 
-CodyOS is the broader project. Its first working component is **Cody Home**:
-a smart-display experience for a jailbroken, LineageOS-based Echo Show 5.
-Cody Home talks to your own self-hosted AI backend through a secure Gateway —
-no provider keys on the display, no bundled personal agent data, your hardware
-and your backend.
+CodyOS ist das Gesamtprojekt. Die erste funktionierende Komponente ist
+**Cody Home**: eine Smart-Display-Erfahrung für einen jailbroken Echo Show 5
+mit LineageOS. Cody Home spricht über ein sicheres Gateway mit deinem eigenen
+self-hosted KI-Backend — keine Provider-Keys auf dem Display, keine gebündelten
+persönlichen Agentendaten, deine Hardware und dein Backend.
 
-CodyOS does **not** include anyone's personal Hermes agent. Hermes is an
-external, self-hosted backend that users configure themselves. The code here
-contains a Gateway and an optional generic Hermes integration, not Hermes core,
-not memory, not sessions, and not provider credentials.
+CodyOS enthält **keinen** persönlichen Hermes-Agenten. Hermes ist ein externes,
+self-hosted Backend, das Nutzer selbst betreiben und konfigurieren. Dieses Repo
+enthält ein Gateway und eine optionale generische Hermes-Integration, aber
+keinen Hermes-Core, keine Memory, keine Sessions und keine Provider-Zugangsdaten.
 
-## Architecture
+## Architektur
 
 ```text
 Echo Show 5
@@ -29,93 +29,94 @@ Cody Home Gateway
 ↓
 Hermes Integration
 ↓
-User's own Hermes instance
+Eigene Hermes-Instanz des Nutzers
 ```
 
-Future CodyOS ROM work is a long-term goal and is not included yet.
+Ein CodyOS-ROM ist ein späteres Langfristziel und aktuell noch nicht enthalten.
 
-## What it looks like
+## Wie es aussieht
 
-Cody Home shows a dashboard with the time, your agent's connection status,
-current activity, and an animated character ("Cody") that reflects what's
-happening — listening, thinking, speaking, idle. A dimmed ambient screen takes
-over after a period of inactivity.
+Cody Home zeigt ein Dashboard mit Uhrzeit, Verbindungsstatus des Agenten,
+aktueller Aktivität und einer animierten Figur („Cody“), die den Zustand
+widerspiegelt — zuhören, denken, sprechen oder ruhen. Nach Inaktivität übernimmt
+ein abgedunkelter Ambient-Bildschirm.
 
-## Features
+## Funktionen
 
-- Native Android app (Kotlin, Jetpack Compose) — no WebView, no hybrid shell
-- Animated Cody companion with distinct **character states** (idle, listening,
+- Native Android-App (Kotlin, Jetpack Compose) — kein WebView, keine Hybrid-Shell
+- Animierter Cody-Begleiter mit klaren **Character States** (idle, listening,
   thinking, working, speaking, success, error, offline)
-- **Ambient mode** — dims and simplifies after inactivity, wakes on touch
-- **Secure pairing** — one-time pairing code exchange, credentials stored in
-  `EncryptedSharedPreferences` (AES-256-GCM, Android Keystore-backed)
-- **HMAC-SHA256 request authentication** on every call to the Gateway
-- **HTTPS + WebSocket Gateway protocol**, with automatic reconnect and backoff
-- **Hermes integration** — optional bridge to a user's own Hermes-style backend
-  (see [`integrations/hermes/`](integrations/hermes/))
-- Text requests to your agent, with streamed status updates
-- Voice pipeline implemented end-to-end (record → upload → STT → agent → TTS →
-  playback) — see [Status](#status) for the current hardware caveat
+- **Ambient-Modus** — dunkler und reduzierter nach Inaktivität, wacht per Touch auf
+- **Sicheres Pairing** — einmaliger Pairing-Code, Zugangsdaten in
+  `EncryptedSharedPreferences` (AES-256-GCM, geschützt durch Android Keystore)
+- **HMAC-SHA256-Authentifizierung** für jeden Gateway-Aufruf
+- **HTTPS- und WebSocket-Gateway-Protokoll** mit automatischem Reconnect und Backoff
+- **Hermes-Integration** — optionale Bridge zum eigenen Hermes-Backend des Nutzers
+  (siehe [`integrations/hermes/`](integrations/hermes/))
+- Textanfragen an deinen Agenten mit gestreamten Status-Updates
+- Voice-Pipeline Ende-zu-Ende implementiert (Aufnahme → Upload → STT → Agent →
+  TTS → Wiedergabe) — siehe [Status](#status) zur aktuellen Hardware-Einschränkung
 
 ## Status
 
-This project is **not** ready for general use. Concretely, right now:
+Dieses Projekt ist **noch nicht bereit für den allgemeinen Einsatz**. Aktuell gilt:
 
-- Cody Home Android, pairing flow, and Gateway protocol (HMAC auth, text
-  requests, reconnect logic) work and have been tested against a real
-  Gateway.
-- The voice pipeline is fully implemented and has been verified working
-  **end-to-end when fed a pre-recorded audio file** — upload, speech-to-text,
-  agent response, text-to-speech, and playback on the Echo's speaker all work.
-- **The physical microphone on the reference hardware does not yet reliably
-  work.** This has been traced deep into the audio stack (see
-  [`docs/architecture/`](docs/architecture/) once published) — it is not an
-  application bug, but appears to be a hardware/driver-level issue specific to
-  this LineageOS port. This is under active investigation.
-- The Gateway (the AI-agent-facing backend this app talks to) is included in
+- Cody Home Android, Pairing-Flow und Gateway-Protokoll (HMAC-Auth,
+  Textanfragen, Reconnect-Logik) funktionieren und wurden gegen ein echtes
+  Gateway getestet.
+- Die Voice-Pipeline ist vollständig implementiert und wurde
+  **Ende-zu-Ende mit einer vorab aufgenommenen Audiodatei** verifiziert —
+  Upload, Speech-to-Text, Agentenantwort, Text-to-Speech und Wiedergabe über
+  den Echo-Lautsprecher funktionieren.
+- **Das physische Mikrofon der Referenz-Hardware funktioniert unter LineageOS
+  noch nicht zuverlässig.** Die Ursache liegt tief im Audio-Stack (siehe
+  [`docs/architecture/`](docs/architecture/), sobald veröffentlicht) — es wirkt
+  nicht wie ein App-Bug, sondern wie ein Hardware-/Treiberproblem dieses
+  LineageOS-Ports. Das wird weiter untersucht.
+- Das Gateway, mit dem die App zum KI-Agenten spricht, ist enthalten in
   [`gateway/`](gateway/).
-- The Hermes integration is included as a generic extension point in
+- Die Hermes-Integration ist als generischer Erweiterungspunkt enthalten in
   [`integrations/hermes/`](integrations/hermes/).
 
-## Repository layout
+## Repository-Struktur
 
 ```
 CodyOS/
-├── android/           Cody Home native Android client for the Echo
-├── gateway/           FastAPI Gateway for authenticated device transport
+├── android/           Native Cody-Home-Android-App für den Echo
+├── gateway/           FastAPI-Gateway für authentifizierten Gerätetransport
 ├── integrations/
-│   └── hermes/         Optional generic bridge for a user's own Hermes backend
+│   └── hermes/         Optionale generische Bridge zum eigenen Hermes-Backend
 ├── docs/
-│   ├── device-setup/    Unlocking/flashing the reference hardware
-│   ├── installation/    Installing Cody Home once the device is ready
-│   ├── architecture/     How the pieces fit together
+│   ├── device-setup/    Unlock/Flash der Referenz-Hardware
+│   ├── installation/    Installation von Cody Home nach dem Geräte-Setup
+│   ├── architecture/     Zusammenspiel der Komponenten
 │   └── screenshots/
 ├── assets/branding/
 └── scripts/
 ```
 
-## Supported device
+## Unterstütztes Gerät
 
-Amazon Echo Show 5, 1st generation (2019) — codename `checkers`, model
-`H23K37`, running an unofficial LineageOS 18.1 build. See
-[`docs/device-setup/README.md`](docs/device-setup/README.md) for what's
-involved before you can install Cody Home at all — this requires unlocking
-the bootloader and flashing a community LineageOS build; it is not a
-supported or reversible-without-risk process.
+Amazon Echo Show 5, 1. Generation (2019) — Codename `checkers`, Modell
+`H23K37`, mit einem inoffiziellen LineageOS-18.1-Build. Siehe
+[`docs/device-setup/README.md`](docs/device-setup/README.md), bevor du Cody Home
+installierst: Dafür muss der Bootloader entsperrt und ein Community-LineageOS
+geflasht werden. Das ist kein offiziell unterstützter und nicht risikofrei
+rückgängig machbarer Prozess.
 
-## Getting started
+## Erste Schritte
 
-1. Prepare the device — see [`docs/device-setup/`](docs/device-setup/).
-2. Install Cody Home — see [`docs/installation/`](docs/installation/).
-3. Point it at your own Gateway — copy
-   [`android/gradle.properties.example`](android/gradle.properties.example) to
-   `android/gradle.properties` and fill in your Gateway's URLs before building.
+1. Gerät vorbereiten — siehe [`docs/device-setup/`](docs/device-setup/).
+2. Cody Home installieren — siehe [`docs/installation/`](docs/installation/).
+3. Eigenes Gateway eintragen — kopiere
+   [`android/gradle.properties.example`](android/gradle.properties.example) nach
+   `android/gradle.properties` und trage vor dem Build deine Gateway-URLs ein.
 
-## Security
+## Sicherheit
 
-See [`SECURITY.md`](SECURITY.md) for the authentication model, what's stored
-where, and how to report a vulnerability.
+Siehe [`SECURITY.md`](SECURITY.md) für das Authentifizierungsmodell, gespeicherte
+Daten und Hinweise zum Melden von Schwachstellen.
 
-## License
+## Lizenz
 
-Apache License 2.0. See [`LICENSE`](LICENSE).
+Apache License 2.0. Siehe [`LICENSE`](LICENSE).

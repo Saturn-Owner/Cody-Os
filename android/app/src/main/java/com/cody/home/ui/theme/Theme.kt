@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-// Cody Home is a dark, always-on smart-display UI — there is no light variant by design.
+// Cody Home ist eine dunkle Always-on-Smart-Display-UI; eine helle Variante ist bewusst nicht vorgesehen.
 private val CodyDarkColors = darkColorScheme(
     background = androidx.compose.ui.graphics.Color(0xFF0B0D10),
     surface = androidx.compose.ui.graphics.Color(0xFF15181D),

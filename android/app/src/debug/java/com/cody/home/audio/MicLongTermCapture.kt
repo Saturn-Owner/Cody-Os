@@ -15,23 +15,17 @@ import java.util.Locale
 import kotlin.math.sqrt
 
 /**
- * DEBUG-only. The actual measurement logic for the overnight mic-degradation
- * test — plain suspend functions, no framework scheduling dependency, so it
- * can be driven by whichever mechanism (currently [MicLongTermAlarmReceiver])
- * actually wakes the device reliably on this ROM.
+ * Nur Debug. Die eigentliche Messlogik für den Übernacht-Mikrofontest liegt hier
+ * als einfache suspend-Funktionen ohne Framework-Scheduling-Abhängigkeit.
  *
- * One call to [runOneCycle] = one measurement point. Fixed, known-stable
- * config every time: AudioSource.MIC, 16000 Hz, mono, PCM_16BIT — so results
- * are directly comparable across the whole test instead of multiplying
- * variables. Never dumps audio to disk, only aggregate stats. Never touches
- * Gateway/VoiceRepository.
+ * Ein Aufruf von [runOneCycle] entspricht einem Messpunkt. Die Konfiguration ist
+ * absichtlich konstant: AudioSource.MIC, 16000 Hz, Mono, PCM_16BIT. Dadurch
+ * bleiben Ergebnisse vergleichbar. Es wird kein Audio auf Disk geschrieben,
+ * sondern nur aggregierte Statistik; Gateway/VoiceRepository werden nicht berührt.
  *
- * Output: one JSON line appended per measurement to
- * <filesDir>/long_term_mic_test.jsonl. On a SILENT result, two more capture
- * attempts follow ~60s apart (inline in this same call). If all three come
- * back SILENT, a single FIRST_CONFIRMED_FAILURE marker line is written
- * (SharedPreferences flag ensures this fires only once across the whole
- * test — later runs keep logging normally even if the mic never recovers).
+ * Ausgabe: pro Messung eine JSON-Zeile in <filesDir>/long_term_mic_test.jsonl.
+ * Bei SILENT folgen zwei weitere Versuche mit ca. 60s Abstand. Wenn alle drei
+ * SILENT sind, wird einmalig FIRST_CONFIRMED_FAILURE geschrieben.
  */
 object MicLongTermCapture {
     private const val TAG = "CodyLongTermMic"
@@ -62,7 +56,7 @@ object MicLongTermCapture {
                 delay(CONFIRM_DELAY_MS)
                 val confirm = runCatching { capture() }.getOrElse { e ->
                     appendLine(context, errorEntry(seq, e, confirmIndex = i))
-                    allSilent = false // inconclusive, don't claim a confirmed failure on an error
+                    allSilent = false // unklar, bei Fehler keinen bestätigten Ausfall melden
                     null
                 } ?: continue
                 appendLine(context, measurementEntry(seq, confirmIndex = i, result = confirm))
@@ -88,12 +82,12 @@ object MicLongTermCapture {
         val channelConfig = AudioFormat.CHANNEL_IN_MONO
         val encoding = AudioFormat.ENCODING_PCM_16BIT
         val minBuf = AudioRecord.getMinBufferSize(SAMPLE_RATE_HZ, channelConfig, encoding)
-        check(minBuf > 0) { "getMinBufferSize invalid: $minBuf" }
+        check(minBuf > 0) { "getMinBufferSize ungültig: $minBuf" }
         val bufSize = minBuf * 4
 
-        @Suppress("MissingPermission") // RECORD_AUDIO already granted via the real mic flow
+        @Suppress("MissingPermission") // RECORD_AUDIO wurde über den echten Mikrofon-Flow gewährt
         val recorder = AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_HZ, channelConfig, encoding, bufSize)
-        check(recorder.state == AudioRecord.STATE_INITIALIZED) { "AudioRecord not initialized (state=${recorder.state})" }
+        check(recorder.state == AudioRecord.STATE_INITIALIZED) { "AudioRecord nicht initialisiert (state=${recorder.state})" }
 
         val shortBuf = ShortArray(bufSize / 2)
         var totalSamples = 0
@@ -124,9 +118,9 @@ object MicLongTermCapture {
 
         val rms = if (totalSamples > 0) sqrt(sumSquares / totalSamples) else 0.0
         if (totalSamples == 0) { min = 0; max = 0 }
-        // PASS requires a clear majority of real signal, not just a stray non-zero
-        // sample — matches every PASS/SILENT case observed in manual testing so far,
-        // where it was always either ~90%+ non-zero or exactly 0, never in between.
+        // PASS verlangt eine klare Mehrheit echten Signals, nicht nur ein einzelnes
+        // Non-Zero-Sample. Das passt zu allen bisher manuell beobachteten PASS/SILENT-Fällen:
+        // entweder ca. 90%+ Non-Zero oder exakt 0, nie dazwischen.
         val passThreshold = (totalSamples * 0.01).toInt()
         val result = if (nonZeroSamples > passThreshold) RESULT_PASS else RESULT_SILENT
         return CaptureResult(totalSamples, nonZeroSamples, min, max, rms, result)
@@ -187,7 +181,7 @@ object MicLongTermCapture {
                 out.write((json + "\n").toByteArray())
             }
         }.onFailure {
-            Log.e(TAG, "failed to append to $LOG_FILE_NAME: ${it.message}")
+            Log.e(TAG, "Anhängen an $LOG_FILE_NAME fehlgeschlagen: ${it.message}")
         }
     }
 

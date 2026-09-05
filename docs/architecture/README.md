@@ -1,14 +1,12 @@
-# Architecture
+# Architektur
 
-*(To be completed.)* This section will cover:
+*(Noch auszufüllen.)* Dieser Abschnitt wird beschreiben:
 
-- How the Android client, Gateway, and Hermes integration fit together
-- The pairing flow and HMAC-SHA256 request-authentication scheme
-- The Gateway event protocol (connection lifecycle, `cody.state`,
-  streamed message deltas, voice events)
-- The character-state model driving Cody's on-screen animation
-- What's currently known about the microphone hardware issue on the
-  reference device, and what's been ruled out so far
+- wie Android-App, Gateway und Hermes-Integration zusammenspielen
+- den Pairing-Flow und die HMAC-SHA256-Authentifizierung
+- das Gateway-Event-Protokoll (Verbindungslebenszyklus, `cody.state`,
+  gestreamte Message-Deltas, Voice-Events)
+- das Character-State-Modell für Codys Animation
+- den aktuellen Stand zum Mikrofonproblem auf der Referenz-Hardware
 
-This will be written up from the project's own development history once the
-public repo structure is finalized.
+Die Details werden aus der Entwicklungshistorie des Projekts nachgetragen.

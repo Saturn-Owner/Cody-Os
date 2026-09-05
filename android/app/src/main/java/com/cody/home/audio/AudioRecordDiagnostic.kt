@@ -13,16 +13,15 @@ import java.nio.ByteOrder
 import kotlin.math.sqrt
 
 /**
- * DEBUG-ONLY. Bypasses MediaRecorder entirely and reads raw PCM straight from
- * [AudioRecord] to answer one question: does *any* real, changing audio signal
- * reach the app from the audio HAL on this device at all? See VoiceRecorder's
- * KNOWN ISSUE doc comment for the MediaRecorder failure this is diagnosing.
+ * NUR DEBUG. Umgeht MediaRecorder vollständig und liest rohes PCM direkt aus
+ * [AudioRecord], um eine Frage zu beantworten: Erreicht überhaupt ein echtes,
+ * wechselndes Audiosignal aus der Audio-HAL die App?
  *
- * Never wired into a release code path — only ever invoked from MainActivity's
- * BuildConfig.DEBUG-gated broadcast receiver.
+ * Nicht in Release-Codepfade verdrahtet; nur über den durch BuildConfig.DEBUG
+ * geschützten Broadcast-Receiver in MainActivity erreichbar.
  *
- * Deliberately logs only aggregate statistics (sample counts, min/max, RMS) —
- * never raw sample values or anything secret.
+ * Loggt bewusst nur aggregierte Statistik (Sample-Anzahlen, Min/Max, RMS),
+ * niemals rohe Samplewerte oder Secrets.
  */
 object AudioRecordDiagnostic {
 
@@ -51,9 +50,9 @@ object AudioRecordDiagnostic {
     )
 
     /**
-     * Runs the full source x sample-rate x mode matrix sequentially (~16 combos x 4s
-     * = ~65s total) and logs one structured line per combo plus a final summary.
-     * Blocking — call from a background dispatcher, never the main thread.
+     * Führt die komplette Source-x-Samplerate-x-Modus-Matrix sequenziell aus
+     * und loggt pro Kombination eine strukturierte Zeile plus Zusammenfassung.
+     * Blockierend — nur aus einem Background-Dispatcher aufrufen.
      */
     fun runFullMatrix(context: Context, dumpWav: Boolean) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -63,7 +62,7 @@ object AudioRecordDiagnostic {
             "MIC" to MediaRecorder.AudioSource.MIC,
             "VOICE_RECOGNITION" to MediaRecorder.AudioSource.VOICE_RECOGNITION,
             "DEFAULT" to MediaRecorder.AudioSource.DEFAULT,
-            "UNPROCESSED" to MediaRecorder.AudioSource.UNPROCESSED, // API 24+; we probe live, no static support check exists
+            "UNPROCESSED" to MediaRecorder.AudioSource.UNPROCESSED, // API 24+; Live-Probe statt statischer Support-Prüfung
         )
         val sampleRates = listOf(16_000, 48_000)
         val modes = listOf(
@@ -71,7 +70,7 @@ object AudioRecordDiagnostic {
             "MODE_IN_COMMUNICATION" to AudioManager.MODE_IN_COMMUNICATION,
         )
 
-        Log.i(TAG, "=== matrix starting: ${sources.size} sources x ${sampleRates.size} rates x ${modes.size} modes, ${RECORD_MS}ms each ===")
+        Log.i(TAG, "=== matrix startet: ${sources.size} sources x ${sampleRates.size} raten x ${modes.size} modi, je ${RECORD_MS}ms ===")
 
         val results = mutableListOf<ComboResult>()
         try {
@@ -91,9 +90,9 @@ object AudioRecordDiagnostic {
         }
 
         val realSignalCombos = results.filter { it.nonZeroSamples > 0 && it.rms > 1.0 }
-        Log.i(TAG, "=== matrix complete: ${results.size} combos tested, ${realSignalCombos.size} showed real non-zero/RMS>1.0 signal ===")
+        Log.i(TAG, "=== matrix fertig: ${results.size} kombinationen getestet, ${realSignalCombos.size} mit echtem non-zero/RMS>1.0-signal ===")
         if (realSignalCombos.isNotEmpty()) {
-            Log.i(TAG, "=== combos with real signal: ${realSignalCombos.map { "${it.combo.sourceName}/${it.combo.sampleRate}Hz/${it.combo.modeName}" }} ===")
+            Log.i(TAG, "=== kombinationen mit echtem signal: ${realSignalCombos.map { "${it.combo.sourceName}/${it.combo.sampleRate}Hz/${it.combo.modeName}" }} ===")
         }
     }
 
@@ -103,16 +102,16 @@ object AudioRecordDiagnostic {
         val encoding = AudioFormat.ENCODING_PCM_16BIT
         val minBufSize = AudioRecord.getMinBufferSize(combo.sampleRate, channelConfig, encoding)
         if (minBufSize <= 0) {
-            Log.w(TAG, "[$label] getMinBufferSize invalid: $minBufSize — skipping")
+            Log.w(TAG, "[$label] getMinBufferSize ungültig: $minBufSize — überspringe")
             return ComboResult(combo, "INVALID_MIN_BUFFER($minBufSize)", 0, 0, 0, 0, 0, 0.0, emptyList(), null)
         }
         val bufSize = minBufSize * 4
 
         val recorder = try {
-            @Suppress("MissingPermission") // RECORD_AUDIO already granted via the real mic flow before this diagnostic is triggered
+            @Suppress("MissingPermission") // RECORD_AUDIO wurde vor dieser Diagnose bereits über den echten Mikrofon-Flow gewährt
             AudioRecord(combo.source, combo.sampleRate, channelConfig, encoding, bufSize)
         } catch (e: Exception) {
-            Log.w(TAG, "[$label] AudioRecord() threw: ${e.javaClass.simpleName}: ${e.message}")
+            Log.w(TAG, "[$label] AudioRecord() fehler: ${e.javaClass.simpleName}: ${e.message}")
             return ComboResult(combo, "CONSTRUCTOR_EXCEPTION(${e.javaClass.simpleName})", 0, 0, 0, 0, 0, 0.0, emptyList(), null)
         }
 

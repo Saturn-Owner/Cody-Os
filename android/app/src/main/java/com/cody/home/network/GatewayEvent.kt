@@ -2,7 +2,7 @@ package com.cody.home.network
 
 import org.json.JSONObject
 
-/** Mirrors the CodyHomeEvent envelope: {version, type, timestamp, request_id, data}. */
+/** Spiegelt den CodyHomeEvent-Umschlag: {version, type, timestamp, request_id, data}. */
 data class GatewayEvent(
     val version: Int,
     val type: String,
@@ -24,7 +24,7 @@ data class GatewayEvent(
     }
 }
 
-/** Event type strings from the Gateway protocol — grouped here so nothing is typo'd twice. */
+/** Eventtyp-Strings aus dem Gateway-Protokoll — zentral gesammelt gegen Tippfehler. */
 object GatewayEventType {
     const val CONNECTION_READY = "connection.ready"
     const val CONNECTION_ERROR = "connection.error"

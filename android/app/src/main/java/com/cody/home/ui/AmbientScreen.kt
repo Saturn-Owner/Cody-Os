@@ -26,9 +26,9 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Reduced "pretend standby" look — device stays fully on underneath
- * (FLAG_KEEP_SCREEN_ON in MainActivity), this is purely visual. As little
- * motion as possible: no dashboard cards, Cody asleep, slow clock tick.
+ * Reduzierter Standby-Look: Das Gerät bleibt technisch an
+ * (FLAG_KEEP_SCREEN_ON in MainActivity), diese Ansicht ist rein visuell.
+ * Möglichst wenig Bewegung: keine Dashboard-Karten, Cody schläft, Uhr tickt langsam.
  */
 @Composable
 fun AmbientScreen(character: CharacterState) {

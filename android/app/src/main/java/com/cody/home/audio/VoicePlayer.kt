@@ -8,13 +8,11 @@ import java.io.File
 import kotlin.math.sqrt
 
 /**
- * Plays back the MP3 the Gateway returns. If [android.media.audiofx.Visualizer]
- * attaches successfully to the playback session, [onAmplitude] gets a real,
- * simple RMS-of-waveform amplitude (0f..1f) a few times a second — no FFT, no
- * frequency analysis, just "how loud is it right now". If the Visualizer can't
- * attach (not supported on this build/HAL), [onAmplitude] is simply never
- * called and the caller's own fallback animation takes over — see
- * CodyCharacter's SPEAKING state, which looks correct either way.
+ * Spielt die MP3-Antwort des Gateways ab. Wenn [android.media.audiofx.Visualizer]
+ * an die Playback-Session angehängt werden kann, bekommt [onAmplitude] mehrmals
+ * pro Sekunde eine einfache RMS-Lautstärke (0f..1f). Wenn der Visualizer auf
+ * diesem Build/HAL nicht unterstützt wird, übernimmt die Fallback-Animation des
+ * SPEAKING-Zustands.
  */
 class VoicePlayer {
 
@@ -74,7 +72,7 @@ class VoicePlayer {
             v.enabled = true
             visualizer = v
         } catch (_: Exception) {
-            // No Visualizer support here — the character's built-in fallback animation covers this.
+            // Kein Visualizer-Support; die eingebaute Fallback-Animation deckt das ab.
         }
     }
 

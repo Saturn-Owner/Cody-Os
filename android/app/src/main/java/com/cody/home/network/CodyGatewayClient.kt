@@ -30,15 +30,15 @@ sealed class MessageResult {
 }
 
 /**
- * Thin REST + WebSocket client for the Cody Gateway. Knows the wire protocol
- * (paths, headers, HMAC signing) but nothing about app state — that's
- * [GatewayRepository]'s job. UI code never touches this directly.
+ * Schlanker REST- und WebSocket-Client für das Cody Gateway. Kennt das Wire-Protokoll
+ * (Pfade, Header, HMAC-Signatur), aber keinen App-State — das ist Aufgabe von
+ * [GatewayRepository]. UI-Code greift nicht direkt darauf zu.
  */
 class CodyGatewayClient {
 
-    // A longer read timeout on its own client for the socket the WS runs on — the
-    // WS connection is meant to sit open for a long time; the ping frames below
-    // are what actually detect a dead connection, not this timeout.
+    // Eigener Client für den Socket mit längerem Read-Timeout: Die WS-Verbindung
+    // soll lange offen bleiben; tote Verbindungen erkennt das Ping-Intervall unten,
+    // nicht dieses Timeout.
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
@@ -46,7 +46,7 @@ class CodyGatewayClient {
 
     private val wsClient = httpClient.newBuilder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
-        .pingInterval(20, TimeUnit.SECONDS) // protocol-level WS ping/pong; no app-level scheme was specified
+        .pingInterval(20, TimeUnit.SECONDS) // WS-Ping/Pong auf Protokollebene; kein App-Level-Schema nötig
         .build()
 
     suspend fun pair(code: String, deviceName: String): PairResult {
@@ -76,7 +76,7 @@ class CodyGatewayClient {
                 PairResult.Failure(errorFrom(raw), response.code)
             }
         } catch (e: IOException) {
-            PairResult.Failure("network_error: ${e.message}", 0)
+            PairResult.Failure("netzwerk_fehler: ${e.message}", 0)
         }
     }
 
@@ -116,13 +116,13 @@ class CodyGatewayClient {
                 if (event != null && answerText != null) {
                     MessageResult.Success(answerText, event.requestId)
                 } else {
-                    MessageResult.Failure("malformed_response", response.code)
+                    MessageResult.Failure("fehlerhafte_antwort", response.code)
                 }
             } else {
                 MessageResult.Failure(errorFrom(raw), response.code)
             }
         } catch (e: IOException) {
-            MessageResult.Failure("network_error: ${e.message}", 0)
+            MessageResult.Failure("netzwerk_fehler: ${e.message}", 0)
         }
     }
 
@@ -132,7 +132,7 @@ class CodyGatewayClient {
     }
 
     private fun errorFrom(raw: String): String =
-        runCatching { JSONObject(raw).optString("error", "unknown_error") }.getOrDefault("unknown_error")
+        runCatching { JSONObject(raw).optString("error", "unbekannter_fehler") }.getOrDefault("unbekannter_fehler")
 
     private suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
         enqueue(object : Callback {

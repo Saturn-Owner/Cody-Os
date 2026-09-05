@@ -6,37 +6,32 @@ import android.util.Log
 import com.cody.home.BuildConfig
 import java.io.File
 
-private const val MAX_RECORDING_MS = 30_000 // sane upper bound — nobody needs a 15-minute voice note here
-private const val SAMPLE_RATE_HZ = 16_000   // mono voice, not music — keeps the m4a small under the 15 MiB /voice cap
+private const val MAX_RECORDING_MS = 30_000 // sinnvolle Obergrenze — keine 15-Minuten-Sprachnotizen
+private const val SAMPLE_RATE_HZ = 16_000   // Mono-Sprache, keine Musik — hält m4a unter dem /voice-Limit
 private const val BITRATE_BPS = 64_000
 
 /**
- * Records mono AAC-in-MP4 (.m4a) via [MediaRecorder] — the highest-level API that
- * still gives us the exact container/codec the Gateway asks for, without hand-rolling
- * an encoder via MediaCodec. One instance is single-use: start() once, stop() or
- * cancel() once, then discard it.
+ * Nimmt Mono-AAC-in-MP4 (.m4a) über [MediaRecorder] auf — die höchste API-Ebene,
+ * die trotzdem genau Container/Codec liefert, die das Gateway erwartet. Eine
+ * Instanz ist Einweg: einmal start(), einmal stop() oder cancel(), dann verwerfen.
  *
- * KNOWN ISSUE (2026-09-02, real hardware): on this Echo Show 5 / LineageOS "checkers"
- * port, MediaRecorder.stop() reliably throws RuntimeException("stop failed") with an
- * identical 3354-byte header-only output file — reproduced across AudioSource.MIC,
- * VOICE_RECOGNITION and DEFAULT, and across MPEG_4/AAC as well as the much more
- * primitive THREE_GPP/AMR_NB. Since the failure is identical regardless of container
- * or encoder, the problem sits upstream of MediaRecorder's encode/mux stage — no real
- * PCM samples appear to reach it from the audio HAL at all, consistent with this
- * port's already-documented partial mic-array support. Not resolved from app code;
- * see the Voice V1 report for suggested next steps (e.g. probing raw AudioRecord).
+ * BEKANNTES PROBLEM (2026-09-02, echte Hardware): Auf diesem Echo Show 5 /
+ * LineageOS-`checkers`-Port wirft MediaRecorder.stop() zuverlässig
+ * RuntimeException("stop failed") und erzeugt nur eine identische 3354-Byte-
+ * Headerdatei. Das tritt unabhängig von AudioSource, Container und Encoder auf;
+ * vermutlich erreicht kein echtes PCM-Signal die App aus der Audio-HAL.
  */
 class VoiceRecorder(private val context: Context) {
 
     private var recorder: MediaRecorder? = null
     private var outputFile: File? = null
 
-    /** Starts recording to a fresh cache file. [onMaxDurationReached] fires if the cap above kicks in. */
+    /** Startet die Aufnahme in eine frische Cache-Datei. [onMaxDurationReached] feuert bei Zeitlimit. */
     fun start(onMaxDurationReached: () -> Unit): File {
-        check(recorder == null) { "VoiceRecorder is single-use — create a new instance per recording." }
+        check(recorder == null) { "VoiceRecorder ist Einweg — pro Aufnahme eine neue Instanz erzeugen." }
 
         val file = File(context.cacheDir, "cody_voice_${System.currentTimeMillis()}.m4a")
-        @Suppress("DEPRECATION") // MediaRecorder(Context) needs API 31; this app's minSdk/targetSdk is fixed at 30.
+        @Suppress("DEPRECATION") // MediaRecorder(Context) braucht API 31; minSdk/targetSdk bleibt bewusst 30.
         val r = MediaRecorder()
         r.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -54,28 +49,27 @@ class VoiceRecorder(private val context: Context) {
             prepare()
             debugLog("start()")
             start()
-            debugLog("started ok, file=${file.absolutePath}")
+            debugLog("gestartet ok, datei=${file.absolutePath}")
         }
         recorder = r
         outputFile = file
         return file
     }
 
-    /** Stops cleanly and returns the recorded file, or null if the recording was too short/invalid. */
+    /** Stoppt sauber und liefert die Datei, oder null bei zu kurzer/ungültiger Aufnahme. */
     fun stop(): File? {
         val r = recorder ?: return null
         val file = outputFile
-        debugLog("stop() called, file exists before stop=${file?.exists()} size=${file?.length()}")
+        debugLog("stop() aufgerufen, datei_vorher_vorhanden=${file?.exists()} groesse=${file?.length()}")
         return try {
             r.stop()
             r.release()
             recorder = null
-            debugLog("stop() ok, file exists=${file?.exists()} size=${file?.length()}")
+            debugLog("stop() ok, datei_vorhanden=${file?.exists()} groesse=${file?.length()}")
             file
         } catch (e: RuntimeException) {
-            // MediaRecorder.stop() throws if stop() is called too soon after start() with no data captured
-            // — or, as found on this hardware, if the HAL never delivered real samples at all.
-            if (BuildConfig.DEBUG) Log.e(TAG, "stop() threw: ${e.javaClass.simpleName}: ${e.message}", e)
+            // MediaRecorder.stop() wirft, wenn zu früh gestoppt wurde oder die HAL keine Samples liefert.
+            if (BuildConfig.DEBUG) Log.e(TAG, "stop() fehler: ${e.javaClass.simpleName}: ${e.message}", e)
             r.release()
             recorder = null
             file?.delete()
@@ -83,12 +77,12 @@ class VoiceRecorder(private val context: Context) {
         }
     }
 
-    /** Aborts and deletes the partial file — used when the user backs out or the app is torn down mid-recording. */
+    /** Bricht ab und löscht die Teil-Datei, etwa beim Zurückgehen oder App-Abbau. */
     fun cancel() {
         try {
             recorder?.stop()
         } catch (_: RuntimeException) {
-            // fine — we're discarding the file either way
+            // in Ordnung — die Datei wird ohnehin verworfen
         }
         recorder?.release()
         recorder = null

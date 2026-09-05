@@ -20,11 +20,9 @@ import org.json.JSONObject
 import java.util.UUID
 
 /**
- * Owns the Gateway connection lifecycle: pairing, WS connect/auth, reconnect
- * with backoff, and turns raw [GatewayEvent]s into two things UI code can
- * actually consume: [connectionState] (transport-level) and [events] (every
- * parsed server event, for [com.cody.home.state.CodyStateHolder] to map onto
- * CodyUiState). Nothing in ui/ or state/ touches OkHttp or JSON directly.
+ * Verwaltet den Gateway-Verbindungslebenszyklus: Pairing, WebSocket-
+ * Verbindung/Auth, Reconnect mit Backoff und Übersetzung roher [GatewayEvent]s
+ * in beobachtbare UI-Daten. UI/state greifen nicht direkt auf OkHttp oder JSON zu.
  */
 class GatewayRepository(private val credentialStore: CredentialStore) {
 
@@ -34,12 +32,9 @@ class GatewayRepository(private val credentialStore: CredentialStore) {
     private val _connectionState = MutableStateFlow<GatewayConnectionState>(GatewayConnectionState.Disconnected)
     val connectionState: StateFlow<GatewayConnectionState> = _connectionState
 
-    // replay = 8: GatewayRepository.start() runs in Activity.onCreate, before Compose has
-    // subscribed to `events` — the connect -> auth -> connection.ready -> cody.state burst
-    // can complete in well under 100ms, faster than composition reaches the collector.
-    // Without a replay buffer that whole burst is silently dropped and the UI hangs on
-    // CONNECTING forever despite a fully authenticated connection (found on real hardware,
-    // 2026-09-03 — logs showed the events arriving; the UI simply never saw them).
+    // replay = 8: GatewayRepository.start() läuft in Activity.onCreate, bevor
+    // Compose `events` abonniert. Ohne Replay-Puffer kann der erste Event-Burst
+    // verloren gehen und die UI bleibt trotz Authentifizierung auf CONNECTING.
     private val _events = MutableSharedFlow<GatewayEvent>(replay = 8, extraBufferCapacity = 32)
     val events: SharedFlow<GatewayEvent> = _events
 
@@ -196,8 +191,8 @@ class GatewayRepository(private val credentialStore: CredentialStore) {
 
     /**
      * Debug-build-only diagnostic logging. Every call site here logs connection
-     * lifecycle info and *incoming* (server -> device) event payloads — never
-     * device_secret, never a signature, never the outgoing connection.auth frame
+     * Nur Lifecycle-Infos und eingehende Server-Events loggen — niemals
+     * device_secret, Signatur oder ausgehenden connection.auth-Frame.
      * (that one, in [sendAuth], is deliberately never logged at all). Compiled
      * out of release builds entirely, not just filtered at runtime.
      */

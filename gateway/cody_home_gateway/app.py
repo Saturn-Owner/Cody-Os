@@ -54,8 +54,8 @@ async def pair(request: Request) -> JSONResponse:
     if not PAIRING_STORE.consume(code):
         return JSONResponse({"error": "invalid_or_expired_pairing_code"}, status_code=401)
     device = DEVICE_STORE.add(device_name)
-    # Secret is returned once to the device over the caller's HTTPS channel.
-    # Only the hash is stored on disk.
+    # Das Secret wird einmalig über den HTTPS-Kanal an das Gerät zurückgegeben.
+    # Auf Disk wird nur der Hash gespeichert.
     return JSONResponse(
         {
             "device_id": device.device_id,

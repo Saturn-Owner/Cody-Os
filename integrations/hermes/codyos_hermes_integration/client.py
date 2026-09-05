@@ -31,7 +31,7 @@ class HermesBackendConfig:
 
 
 class HermesBackendClient:
-    """Generic CodyOS adapter for a user-owned Hermes-compatible API server."""
+    """Generischer CodyOS-Adapter für einen nutzereigenen Hermes-kompatiblen API-Server."""
 
     def __init__(self, config: HermesBackendConfig | None = None, *, session_id_file: Path | None = None) -> None:
         self.config = config or HermesBackendConfig.from_env()

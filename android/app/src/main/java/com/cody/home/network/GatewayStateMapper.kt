@@ -4,9 +4,9 @@ import com.cody.home.state.CodyState
 import com.cody.home.state.CodyStateHolder
 
 /**
- * Translates raw [GatewayEvent]s onto the existing [CodyStateHolder] — the only
- * place that bridges the network layer and the state machine. Neither the UI
- * nor [CharacterController] ever see a [GatewayEvent] directly.
+ * Übersetzt rohe [GatewayEvent]s auf den bestehenden [CodyStateHolder].
+ * Das ist die einzige Brücke zwischen Netzwerk-Layer und State Machine.
+ * UI und [CharacterController] sehen [GatewayEvent]s nie direkt.
  */
 object GatewayStateMapper {
 
@@ -46,13 +46,14 @@ object GatewayStateMapper {
             }
 
             // connection.ready / connection.error / model.changed / task.completed / task.failed /
-            // tool.* / approval.resolved: not mapped onto CodyUiState in V1 — connection.* is
-            // handled by GatewayRepository's connectionState instead; the rest have no V1 UI slot yet.
+            // tool.* / approval.resolved: in V1 nicht direkt auf CodyUiState gemappt.
+            // connection.* läuft über GatewayRepository.connectionState; für den Rest gibt es
+            // noch keinen eigenen V1-UI-Slot.
             else -> Unit
         }
     }
 
-    /** Server sends state names matching [CodyState] entries case-insensitively (e.g. "WORKING", "thinking"). */
+    /** Server sendet State-Namen passend zu [CodyState], ohne Beachtung der Groß-/Kleinschreibung. */
     private fun mapState(raw: String): CodyState? =
         runCatching { CodyState.valueOf(raw.uppercase()) }.getOrNull()
 }

@@ -1,5 +1,5 @@
 # ==========================================================================
-# Secrets & credentials — never committed, under any name variation
+# Secrets und Zugangsdaten — unter keiner Namensvariante committen
 # ==========================================================================
 .env
 .env.*
@@ -29,7 +29,7 @@ known_hosts
 
 
 # ==========================================================================
-# Android / Gradle build output
+# Android-/Gradle-Build-Ausgaben
 # ==========================================================================
 **/build/
 .gradle/
@@ -52,18 +52,20 @@ captures/
 *.swp
 
 # ==========================================================================
-# Logs, backups, scratch data — may carry device IDs, tokens, personal paths
+# Logs, Backups und Arbeitsdaten — können Geräte-IDs, Tokens oder persönliche Pfade enthalten
 # ==========================================================================
 logs/
 *.log
 backups/
 state/
+!android/app/src/main/java/com/cody/home/state/
+!android/app/src/main/java/com/cody/home/state/**
 scratchpad/
 scratch/
 tmp/
 *.tmp
 
-# Python caches / virtualenvs
+# Python-Caches und virtuelle Umgebungen
 __pycache__/
 **/__pycache__/
 .pytest_cache/
@@ -72,7 +74,7 @@ venv/
 .venv/
 
 # ==========================================================================
-# ROM / firmware / device-unlock artifacts — large binaries, never public
+# ROM-, Firmware- und Geräte-Unlock-Artefakte — große Binärdateien, nie öffentlich
 # ==========================================================================
 *.img
 *.bin
@@ -85,7 +87,7 @@ amonet/
 amonet-current/
 
 # ==========================================================================
-# OS cruft
+# Betriebssystem-Reste
 # ==========================================================================
 .DS_Store
 Thumbs.db

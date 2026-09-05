@@ -5,16 +5,16 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 /**
- * Implements the exact HMAC-SHA256 scheme from the 2026-09-03 Cody Home
- * Gateway auth handoff. Canonical string, in order, newline-separated, no
- * trailing newline:
+ * Implementiert exakt das HMAC-SHA256-Schema des Cody Home Gateways.
+ * Kanonischer String, in Reihenfolge, per Newline getrennt, ohne abschließende
+ * Newline:
  *   METHOD_UPPERCASE
- *   PATH               (the internal/signed path, e.g. "/message" or "/ws")
- *   TIMESTAMP           (unix epoch seconds as a float string)
+ *   PATH               (interner/signierter Pfad, z. B. "/message" oder "/ws")
+ *   TIMESTAMP           (Unix-Epoch-Sekunden als Float-String)
  *   NONCE
  *   SHA256_HEX_OF_BODY_BYTES
  *
- * Do not "improve" this — it must byte-for-byte match what the server computes.
+ * Nicht „verbessern“: Das muss bytegenau zur Serverberechnung passen.
  */
 object HmacSigner {
 
@@ -40,7 +40,7 @@ object HmacSigner {
         return hmacSha256Hex(deviceSecret, canonical)
     }
 
-    /** Unix epoch seconds as a float string, matching the server's expected format exactly. */
+    /** Unix-Epoch-Sekunden als Float-String, exakt im vom Server erwarteten Format. */
     fun nowTimestamp(): String = (System.currentTimeMillis() / 1000.0).toString()
 
     private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }

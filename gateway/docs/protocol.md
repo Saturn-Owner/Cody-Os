@@ -1,6 +1,8 @@
-# Cody Home Gateway Protocol
+# Cody-Home-Gateway-Protokoll
 
-Public base path is configured by `CODY_HOME_PUBLIC_BASE_PATH` at the reverse proxy/client layer. The FastAPI app signs internal paths: `/message`, `/voice`, and `/ws`.
+Der öffentliche Basispfad wird über `CODY_HOME_PUBLIC_BASE_PATH` auf Reverse-
+Proxy-/Client-Ebene konfiguriert. Die FastAPI-App signiert die internen Pfade
+`/message`, `/voice` und `/ws`.
 
 ## Pairing
 
@@ -10,11 +12,12 @@ Public base path is configured by `CODY_HOME_PUBLIC_BASE_PATH` at the reverse pr
 {"code":"123456","device_name":"Cody Home Device"}
 ```
 
-Success `201` returns `device_id`, one-time `device_secret`, and `protocol_version`.
+Erfolg `201` liefert `device_id`, das einmalige `device_secret` und
+`protocol_version`.
 
 ## HMAC
 
-Canonical string:
+Kanonischer String:
 
 ```text
 METHOD_UPPERCASE
@@ -24,11 +27,13 @@ NONCE
 SHA256_HEX_OF_EXACT_BODY_BYTES
 ```
 
-Signature is HMAC-SHA256 hex with the device secret. Timestamp is Unix seconds parseable as float. Nonce must be unique during the configured nonce TTL.
+Die Signatur ist HMAC-SHA256 in Hex-Encoding mit dem Geräte-Secret. Der
+Zeitstempel sind Unix-Sekunden, parsebar als Float. Die Nonce muss innerhalb der
+konfigurierten Nonce-TTL eindeutig sein.
 
 ## Message
 
-`POST /message` JSON body:
+`POST /message` JSON-Body:
 
 ```json
 {"request_id":"optional-client-id","text":"hello"}
@@ -36,10 +41,11 @@ Signature is HMAC-SHA256 hex with the device secret. Timestamp is Unix seconds p
 
 ## Voice
 
-`POST /voice` multipart body:
+`POST /voice` Multipart-Body:
 
 - `request_id` optional
 - `input_format` optional
-- `audio` required file
+- `audio` erforderliche Datei
 
-The exact multipart bytes are signed. Response is `audio/mpeg` when successful.
+Signiert werden die exakten Multipart-Bytes. Bei Erfolg ist die Antwort
+`audio/mpeg`.

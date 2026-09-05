@@ -63,23 +63,20 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 /**
- * Cody Home — V1 dashboard, now backed by a real Cody Gateway connection.
+ * Cody Home — V1-Dashboard mit echter Verbindung zum Cody Home Gateway.
  *
- * Ambient/standby handling:
- * The screen is kept on permanently (FLAG_KEEP_SCREEN_ON) — the device never
- * actually sleeps. After [AMBIENT_TIMEOUT_MS] of no touch, the UI switches to
- * a dim, reduced-motion "ambient" look; any touch wakes it back up immediately.
+ * Ambient-/Standby-Verhalten:
+ * Der Bildschirm bleibt dauerhaft an (FLAG_KEEP_SCREEN_ON). Nach
+ * [AMBIENT_TIMEOUT_MS] ohne Touch wechselt die UI in eine dunkle, reduzierte
+ * Ambient-Ansicht; jeder Touch weckt sie sofort wieder.
  *
- * NOTE — ambient light sensor tried and rejected (2026-09-02):
- * TYPE_LIGHT was tested first instead of an inactivity timer. Registration and
- * event delivery both work, but the raw values this LineageOS "checkers" port's
- * sensor HAL reports are stuck oscillating between 1.0 and 2.0 regardless of
- * actual room brightness (confirmed over a 25s bright/dark test) — a HAL
- * calibration defect, not fixable from app code. Revisit if the port's sensor
- * support improves upstream.
+ * Hinweis zum Umgebungslichtsensor:
+ * TYPE_LIGHT wurde getestet, aber die Rohwerte dieses LineageOS-Ports schwanken
+ * unabhängig von der echten Raumhelligkeit nur zwischen 1.0 und 2.0. Das wirkt
+ * wie ein HAL-/Kalibrierungsproblem und ist nicht sinnvoll aus App-Code lösbar.
  */
 
-private const val AMBIENT_TIMEOUT_MS = 120_000L // 2 minutes of no touch
+private const val AMBIENT_TIMEOUT_MS = 120_000L // 2 Minuten ohne Touch
 private const val NORMAL_BRIGHTNESS = 0.45f
 private const val AMBIENT_BRIGHTNESS = 0.04f
 
@@ -93,10 +90,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var gatewayRepository: GatewayRepository
     private lateinit var voiceRepository: VoiceRepository
     private var debugStateReceiver: BroadcastReceiver? = null
-    // Held at Activity scope on purpose — a coroutine-local VoicePlayer got finalized by the
-    // JVM mid-playback ("MediaPlayer finalized without being released", 0 frames delivered)
-    // once its launching coroutine finished, since nothing else referenced it. Debug-fixture-only;
-    // the real mic flow doesn't have this bug, its player lives in the Compose-remembered VoiceSession.
+    // Absichtlich auf Activity-Ebene gehalten: Ein Coroutine-lokaler VoicePlayer
+    // wurde während der Wiedergabe finalisiert, sobald die startende Coroutine endete.
+    // Betrifft nur Debug-Fixtures; der echte Mikrofon-Flow hält den Player in VoiceSession.
     private var debugVoicePlayer: VoicePlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,7 +140,7 @@ class MainActivity : ComponentActivity() {
             androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
-    /** Dim/undim only this window's brightness — no WRITE_SETTINGS permission needed. */
+    /** Dimmt nur dieses Fenster — keine WRITE_SETTINGS-Berechtigung nötig. */
     fun setWindowBrightness(value: Float) {
         val params = window.attributes
         params.screenBrightness = value
@@ -152,14 +148,12 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Debug-only: drives [stateHolder] (and now pairing) straight from the shell,
-     * since the on-device 5-tap dev-panel gesture / text-field taps can't be
-     * triggered reliably via `adb shell input tap` (synthetic taps get eaten by
-     * the hidden-system-bars reveal gesture — see the blocked-touch note from
-     * testing on 2026-09-02). Never registered in release (guarded by
-     * BuildConfig.DEBUG at the only call site).
+     * Nur Debug: steuert [stateHolder] und Pairing direkt aus der Shell, weil
+     * die 5-Tap-Geste und Textfeld-Taps auf diesem LineageOS-Build nicht
+     * zuverlässig per `adb shell input tap` ausgelöst werden können. In Release
+     * nie registriert.
      *
-     * Usage:
+     * Nutzung:
      *   adb shell am broadcast -a com.cody.home.DEBUG_SET_STATE --es state THINKING
      *   adb shell am broadcast -a com.cody.home.DEBUG_PAIR --es code 123456 --es device_name "Cody Home Echo"
      */
@@ -178,13 +172,12 @@ class MainActivity : ComponentActivity() {
                         lifecycleScope.launch { gatewayRepository.pairDevice(code, deviceName) }
                     }
                     "com.cody.home.DEBUG_SEND_VOICE_FIXTURE" -> {
-                        // Mic-free pipeline test (2026-09-03): exercises upload/HMAC, STT, Cody,
-                        // TTS and playback using a pre-recorded file instead of MediaRecorder —
-                        // see VoiceRecorder's KNOWN ISSUE doc comment for why. Fully separate from
-                        // the normal mic recording path; doesn't touch it.
+                        // Mikrofonfreier Pipeline-Test: prüft Upload/HMAC, STT, Cody,
+                        // TTS und Wiedergabe mit vorab aufgenommener Datei statt MediaRecorder.
+                        // Vollständig getrennt vom normalen Mikrofonpfad.
                         val fixture = java.io.File(cacheDir, "voice_fixture.m4a")
                         if (!fixture.exists()) {
-                            android.util.Log.e("CodyVoiceFixture", "fixture file missing: ${fixture.absolutePath}")
+                            android.util.Log.e("CodyVoiceFixture", "fixture-datei fehlt: ${fixture.absolutePath}")
                             return
                         }
                         stateHolder.setState(CodyState.THINKING, statusText = "Verarbeite (Fixture)...")
@@ -223,7 +216,7 @@ class MainActivity : ComponentActivity() {
                                 is com.cody.home.network.VoiceResult.Failure -> {
                                     android.util.Log.e(
                                         "CodyVoiceFixture",
-                                        "sendVoice failed: httpCode=${result.httpCode} error=${result.error}"
+                                        "sendVoice fehler: httpCode=${result.httpCode} error=${result.error}"
                                     )
                                     stateHolder.setState(CodyState.ERROR, message = result.error)
                                 }
@@ -231,35 +224,35 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     "com.cody.home.DEBUG_RUN_AUDIORECORD_DIAG" -> {
-                        // Raw AudioRecord diagnostic (2026-09-03): bypasses MediaRecorder
-                        // entirely — see AudioRecordDiagnostic's doc comment. Runs on a
-                        // background dispatcher since it blocks for ~65s across the full
-                        // source x sample-rate x mode matrix; never touches Compose state.
-                        android.util.Log.i("CodyAudioDiag", "matrix triggered via debug broadcast")
+                        // Direkte AudioRecord-Diagnose (2026-09-03): umgeht MediaRecorder
+                        // vollständig — siehe den Doc-Kommentar von AudioRecordDiagnostic.
+                        // Läuft auf einem Hintergrund-Dispatcher, weil die vollständige
+                        // Source-x-Sample-Rate-x-Mode-Matrix ca. 65s blockiert; berührt nie Compose-State.
+                        android.util.Log.i("CodyAudioDiag", "Matrix über Debug-Broadcast ausgelöst")
                         lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
                             com.cody.home.audio.AudioRecordDiagnostic.runFullMatrix(applicationContext, dumpWav = true)
                         }
                     }
                     "com.cody.home.DEBUG_START_LONGTERM_MIC_MONITOR" -> {
-                        // Overnight mic-degradation test (2026-09-04): schedules
-                        // MicLongTermWorker every ~30min via WorkManager — see
-                        // LongTermMicMonitor's doc comment. Survives app/process
-                        // death, ambient, deep-sleep and USB/adb disconnect; holds
-                        // no wakelock of its own between runs.
-                        android.util.Log.i("CodyLongTermMic", "starting overnight monitor")
+                        // Übernacht-Mikrofon-Degradationstest (2026-09-04): plant
+                        // per LongTermMicMonitor ca. alle 30 Minuten eine Messung.
+                        // Überlebt App-/Prozessende, Ambient-Modus, Deep-Sleep und
+                        // USB-/adb-Trennung; hält zwischen Läufen keinen eigenen Wakelock.
+                        android.util.Log.i("CodyLongTermMic", "Übernacht-Monitor wird gestartet")
                         com.cody.home.audio.LongTermMicMonitor.start(applicationContext)
                     }
                     "com.cody.home.DEBUG_STOP_LONGTERM_MIC_MONITOR" -> {
-                        android.util.Log.i("CodyLongTermMic", "stopping overnight monitor")
+                        android.util.Log.i("CodyLongTermMic", "Übernacht-Monitor wird gestoppt")
                         com.cody.home.audio.LongTermMicMonitor.stop(applicationContext)
                     }
                     "com.cody.home.DEBUG_TEST_LONGTERM_MIC_ALARM_SOON" -> {
-                        // Validation-only: fires the next measurement in ~60s via a genuine
-                        // AlarmManager wake instead of a manual broadcast, to confirm background
-                        // mic access isn't blocked by Android before trusting the overnight run.
-                        // Falls straight back onto the normal 30-min cadence after this one fire.
+                        // Nur Validierung: feuert die nächste Messung in ca. 60s über einen echten
+                        // AlarmManager-Wakeup statt per manuellem Broadcast. So prüfen wir, dass
+                        // Android den Hintergrund-Mikrofonzugriff nicht blockiert, bevor wir dem
+                        // Übernachtlauf vertrauen. Danach geht es automatisch in den normalen
+                        // 30-Minuten-Takt zurück.
                         val delaySeconds = intent.getLongExtra("delay_seconds", 60L)
-                        android.util.Log.i("CodyLongTermMic", "scheduling test alarm in ${delaySeconds}s")
+                        android.util.Log.i("CodyLongTermMic", "Test-Alarm in ${delaySeconds}s wird geplant")
                         com.cody.home.audio.LongTermMicMonitor.scheduleTestAlarm(applicationContext, delaySeconds)
                     }
                     "com.cody.home.DEBUG_SEND_MESSAGE" -> {
@@ -276,9 +269,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        // Exported deliberately: this only lets `adb shell am broadcast` (or another
-        // local app) flip the demo state machine, and the whole receiver never
-        // registers outside a BuildConfig.DEBUG build in the first place.
+        // Absichtlich exportiert: Damit können nur `adb shell am broadcast` oder eine
+        // andere lokale App die Demo-State-Machine umschalten. Der Receiver wird
+        // ohnehin ausschließlich in BuildConfig.DEBUG registriert.
         val filter = IntentFilter().apply {
             addAction("com.cody.home.DEBUG_SET_STATE")
             addAction("com.cody.home.DEBUG_PAIR")
@@ -301,7 +294,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/** Shared by the on-screen dev panel and the debug broadcast receiver, so both stay in sync. */
+/** Wird vom Dev-Panel und vom Debug-Broadcast-Receiver geteilt, damit beide synchron bleiben. */
 private fun applyDevState(stateHolder: CodyStateHolder, state: CodyState) {
     when (state) {
         CodyState.WORKING -> stateHolder.simulateWorkingTask("Beispiel-Aufgabe läuft")
@@ -313,8 +306,8 @@ private fun applyDevState(stateHolder: CodyStateHolder, state: CodyState) {
 }
 
 /**
- * Starts a new recording. On the built-in max-duration cutoff (see [VoiceRecorder]),
- * automatically stops and sends — same path a manual second tap would take.
+ * Startet eine neue Aufnahme. Beim eingebauten Maximaldauer-Limit (siehe [VoiceRecorder])
+ * wird automatisch gestoppt und gesendet — derselbe Pfad wie bei einem manuellen zweiten Tippen.
  */
 private fun startVoiceRecording(
     context: Context,
@@ -340,7 +333,7 @@ private fun startVoiceRecording(
     }
 }
 
-/** Stops the current recording, uploads it, plays back the reply, cleans up both temp files. */
+/** Stoppt die aktuelle Aufnahme, lädt sie hoch, spielt die Antwort ab und räumt beide Temp-Dateien auf. */
 private fun stopVoiceRecordingAndSend(
     context: Context,
     voiceSession: VoiceSession,
@@ -388,7 +381,7 @@ private fun stopVoiceRecordingAndSend(
     }
 }
 
-/** Ambient = true after [AMBIENT_TIMEOUT_MS] of no touch; any touch wakes it immediately. */
+/** Ambient = true nach [AMBIENT_TIMEOUT_MS] ohne Touch; jede Berührung weckt sofort. */
 @Composable
 private fun rememberAmbientState(lastInteraction: State<Long>): Boolean {
     var isAmbient by remember { mutableStateOf(false) }
@@ -416,8 +409,8 @@ private fun ApplyWindowBrightness(isAmbient: Boolean) {
     }
 }
 
-/** Holds the non-Compose-state voice objects across recompositions — a fresh
- *  [VoiceRecorder] per recording (it's single-use), one reused [VoicePlayer]. */
+/** Hält Voice-Objekte außerhalb des Compose-State über Recompositions hinweg:
+ *  einen frischen [VoiceRecorder] pro Aufnahme (Single-Use) und einen wiederverwendeten [VoicePlayer]. */
 private class VoiceSession {
     var recorder: VoiceRecorder? = null
     val player = VoicePlayer()
@@ -488,9 +481,8 @@ private fun CodyHomeRoot(
         }
     }
 
-    // Transport state -> CodyUiState. The server itself sends the first real
-    // cody.state event right after a successful auth, so Connected doesn't
-    // force IDLE here — only the "we are not talking to it" cases are ours to set.
+    // Transportzustand -> CodyUiState. Der Server sendet nach erfolgreicher Auth
+    // selbst das erste echte cody.state-Event; Connected erzwingt hier kein IDLE.
     LaunchedEffect(connectionState) {
         when (connectionState) {
             is GatewayConnectionState.Connecting, is GatewayConnectionState.Authenticating ->
@@ -501,12 +493,12 @@ private fun CodyHomeRoot(
         }
     }
 
-    // Every parsed Gateway event -> CodyUiState, via the one mapper that owns that translation.
+    // Jedes geparste Gateway-Event -> CodyUiState, über den einen Mapper, dem diese Übersetzung gehört.
     LaunchedEffect(Unit) {
         gateway.events.collect { event -> GatewayStateMapper.apply(event, stateHolder) }
     }
 
-    // SUCCESS is transient — fall back to IDLE automatically.
+    // SUCCESS ist transient — automatisch zu IDLE zurückfallen.
     LaunchedEffect(stateHolder.uiState.state) {
         if (stateHolder.uiState.state == CodyState.SUCCESS) {
             delay(2_500)
@@ -582,8 +574,8 @@ private fun CodyHomeRoot(
                 onSelect = { state -> applyDevState(stateHolder, state) },
                 onSendMessage = { text ->
                     scope.launch {
-                        // The Gateway also pushes cody.state over the WS while it works; the
-                        // REST response here carries the actual answer text directly.
+                            // Das Gateway pusht während der Arbeit zusätzlich cody.state über WS;
+                            // die REST-Antwort hier enthält den eigentlichen Antworttext direkt.
                         when (val result = gateway.sendMessage(text)) {
                             is MessageResult.Success -> stateHolder.setMessage(result.text)
                             is MessageResult.Failure -> stateHolder.setState(CodyState.ERROR, message = result.error)

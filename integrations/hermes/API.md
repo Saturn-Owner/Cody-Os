@@ -1,30 +1,31 @@
-# API Contract
+# API-Vertrag
 
-The integration expects a Hermes-compatible backend with:
+Die Integration erwartet ein Hermes-kompatibles Backend mit:
 
 ## Health
 
 `GET /health`
 
-Used to verify backend reachability.
+Wird genutzt, um die Erreichbarkeit des Backends zu prüfen.
 
 ## Sessions
 
 `GET /api/sessions`
 
-Returns a JSON object with `data`, where each item may include `id` and `title`.
+Liefert ein JSON-Objekt mit `data`; einzelne Einträge können `id` und `title`
+enthalten.
 
 `POST /api/sessions`
 
-Request:
+Anfrage:
 
 ```json
 {"title":"CodyOS Home"}
 ```
 
-Response may contain `session_id`, `id`, or nested `session.id`.
+Die Antwort kann `session_id`, `id` oder verschachtelt `session.id` enthalten.
 
-## Streaming chat
+## Streaming-Chat
 
 `POST /api/sessions/{session_id}/chat/stream`
 
@@ -35,10 +36,11 @@ Authorization: Bearer <user-owned-hermes-api-token>
 X-Hermes-Session-Key: codyos-home
 ```
 
-Request:
+Anfrage:
 
 ```json
 {"message":"Hello"}
 ```
 
-Response: server-sent events lines beginning with `data:`. Payloads are mapped conservatively into CodyOS events.
+Antwort: Server-Sent-Events-Zeilen, die mit `data:` beginnen. Payloads werden
+konservativ auf CodyOS-Events gemappt.

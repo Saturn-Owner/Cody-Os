@@ -1,9 +1,13 @@
-# Install CodyOS Hermes Integration
+# CodyOS Hermes-Integration installieren
 
-1. Install and configure your own Hermes instance.
-2. Enable Hermes' API server according to your Hermes version's documentation.
-3. Create a backend API token locally.
-4. Copy `config.example.env` to `.env` and set only your own local values.
-5. Run the Cody Home Gateway with the matching `CODY_HOME_HERMES_*` environment variables, or import `codyos_hermes_integration` directly in a custom CodyOS service.
+1. Installiere und konfiguriere deine eigene Hermes-Instanz.
+2. Aktiviere den Hermes-API-Server gemäß der Dokumentation deiner
+   Hermes-Version.
+3. Erzeuge lokal ein Backend-API-Token.
+4. Kopiere `config.example.env` nach `.env` und trage nur deine eigenen lokalen
+   Werte ein.
+5. Starte das Cody Home Gateway mit den passenden `CODY_HOME_HERMES_*`-
+   Umgebungsvariablen oder importiere `codyos_hermes_integration` direkt in
+   einem eigenen CodyOS-Dienst.
 
-No Hermes core patch is required for the API-based integration.
+Für die API-basierte Integration ist kein Hermes-Core-Patch nötig.

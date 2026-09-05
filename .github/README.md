@@ -1,4 +1,4 @@
 # .github
 
-*(To be completed.)* CI workflows (build verification, lint) can go here
-later, e.g. `.github/workflows/android-build.yml`. Nothing here yet.
+*(Noch auszufüllen.)* CI-Workflows für Build-Prüfung und Linting können später
+hier liegen, zum Beispiel `.github/workflows/android-build.yml`.

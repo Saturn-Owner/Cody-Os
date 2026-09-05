@@ -20,25 +20,24 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 sealed class VoiceResult {
-    /** [events] comes from the X-Cody-Voice-Events response header — a batch summary, not a live stream. */
+    /** [events] kommt aus dem X-Cody-Voice-Events-Header — Batch-Zusammenfassung, kein Live-Stream. */
     data class Success(val mp3Bytes: ByteArray, val events: List<String>) : VoiceResult()
     data class Failure(val error: String, val httpCode: Int) : VoiceResult()
 }
 
 /**
- * Signed multipart upload to `/voice`. The HMAC signs the *exact* multipart
- * body bytes (including boundary) — per the 2026-09-03 voice handoff, that
- * means: build the MultipartBody once, serialize it to bytes ourselves,
- * hash+sign those bytes, then send an identical byte-for-byte RequestBody.
- * Never rebuild the MultipartBody after computing the hash — a fresh build
- * gets a fresh random boundary and the signature would no longer match.
+ * Signierter Multipart-Upload zu `/voice`. HMAC signiert die *exakten*
+ * Multipart-Body-Bytes inklusive Boundary. Deshalb wird der MultipartBody genau
+ * einmal gebaut, zu Bytes serialisiert, signiert und exakt so gesendet.
+ * Danach nicht neu bauen, sonst ändert sich die Boundary und die Signatur passt
+ * nicht mehr.
  */
 class VoiceClient {
 
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS) // uploading audio
-        .readTimeout(45, TimeUnit.SECONDS)  // STT + Cody + TTS round trip
+        .writeTimeout(30, TimeUnit.SECONDS) // Audio-Upload
+        .readTimeout(45, TimeUnit.SECONDS)  // STT + Cody + TTS Roundtrip
         .build()
 
     suspend fun sendVoice(
@@ -58,7 +57,7 @@ class VoiceClient {
             .addFormDataPart("audio", audioFile.name, audioFile.asRequestBody("audio/mp4".toMediaType()))
             .build()
 
-        // Capture the exact bytes once — this is what gets hashed AND what gets sent.
+        // Exakte Bytes einmal erfassen — genau das wird gehasht und gesendet.
         val bodyBytes = Buffer().also { multipart.writeTo(it) }.readByteArray()
 
         val timestamp = HmacSigner.nowTimestamp()
@@ -94,7 +93,7 @@ class VoiceClient {
                 VoiceResult.Failure(errorFrom(raw), response.code)
             }
         } catch (e: IOException) {
-            VoiceResult.Failure("network_error: ${e.message}", 0)
+            VoiceResult.Failure("netzwerk_fehler: ${e.message}", 0)
         }
     }
 
@@ -107,7 +106,7 @@ class VoiceClient {
     }
 
     private fun errorFrom(raw: String): String =
-        runCatching { org.json.JSONObject(raw).optString("error", "unknown_error") }.getOrDefault("unknown_error")
+        runCatching { org.json.JSONObject(raw).optString("error", "unbekannter_fehler") }.getOrDefault("unbekannter_fehler")
 
     private suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
         enqueue(object : Callback {

@@ -1,6 +1,6 @@
-# Copy this file to gradle.properties (already gitignored) and fill in your
-# own Cody Home Gateway's URLs. Without this file the app still builds, just
-# pointed at an obviously-fake placeholder domain (see app/build.gradle.kts).
+# Kopiere diese Datei nach gradle.properties (bereits gitignored) und trage die
+# URLs deines eigenen Cody Home Gateways ein. Ohne lokale Anpassung baut die App
+# weiterhin, zeigt aber auf offensichtliche Platzhalterwerte.
 
 CODY_HOME_HTTPS_URL=https://your-domain.example/cody-home
 CODY_HOME_WSS_URL=wss://your-domain.example/cody-home/ws

@@ -2,7 +2,7 @@ package com.cody.home.network
 
 import java.io.File
 
-/** Thin orchestration over [VoiceClient] — the only thing UI/audio code talks to for voice. */
+/** Schlanke Orchestrierung über [VoiceClient] — die einzige Voice-Schnittstelle für UI/Audio. */
 class VoiceRepository(private val credentialStore: CredentialStore) {
 
     private val client = VoiceClient()

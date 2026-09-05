@@ -10,10 +10,11 @@ from ...config import GatewayConfig, load_config
 
 
 class HermesClient:
-    """Generic adapter for a Hermes-compatible HTTP/SSE backend.
+    """Generischer Adapter für ein Hermes-kompatibles HTTP/SSE-Backend.
 
-    This gateway does not embed an agent, memory, or model provider. It forwards
-    text turns to a separately configured Hermes-compatible backend.
+    Dieses Gateway enthält keinen Agenten, keine Memory und keinen
+    Model-Provider. Es leitet Text-Turns an ein separat konfiguriertes
+    Hermes-kompatibles Backend weiter.
     """
 
     def __init__(

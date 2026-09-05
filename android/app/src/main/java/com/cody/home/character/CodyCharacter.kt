@@ -34,22 +34,22 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /**
- * Cody — a small 2D AI-companion character, drawn natively with Canvas
- * (no bitmaps, no shaders/blur) so it stays cheap on this hardware.
- * Visual language follows the "Cody — AI Companion for Echo Show" reference:
- * dark anthracite shell, glass face-plate, large glowing cyan eyes, a ring-
- * shaped chest core, small arms, a side accent arc.
+ * Cody — ein kleiner 2D-KI-Begleiter, nativ mit Canvas gezeichnet
+ * (keine Bitmaps, keine Shader/Blur), damit er auf dieser Hardware günstig
+ * bleibt. Die Bildsprache folgt der Cody-Referenz: dunkle anthrazitfarbene
+ * Hülle, Glas-Gesicht, große cyan leuchtende Augen, ringförmiger Brustkern,
+ * kleine Arme und ein seitlicher Akzentbogen.
  *
- * This composable is the seam a future `RiveCharacterRenderer` would replace —
- * both would take the exact same [CharacterState] and fill this footprint.
+ * Dieses Composable ist die Nahtstelle, die später ein `RiveCharacterRenderer`
+ * ersetzen könnte. Beide würden denselben [CharacterState] verwenden.
  */
 
 private val CHARACTER_SIZE = 300.dp
 
-// Palette from the reference sheet.
+// Palette aus der Referenz.
 private val ANTHRACITE = Color(0xFF1B1F24)
 private val GRAPHITE = Color(0xFF2A2F36)
-private val FACE_PLATE = Color(0xFF0C0E12) // near-black glass, deliberately darker than the shell
+private val FACE_PLATE = Color(0xFF0C0E12) // fast schwarzes Glas, bewusst dunkler als die Hülle
 private val CYAN = Color(0xFF00E0FF)
 private val TURQUOISE = Color(0xFF1DE6C1)
 private val ACCENT_GLOW = Color(0xFF7FF9E5)
@@ -81,8 +81,8 @@ fun CodyCharacter(character: CharacterState, modifier: Modifier = Modifier) {
     val vs = character.visualState
     val eyeShape = eyeShapeFor(vs)
 
-    // Whole-character motion: bob, tilt and scale — one shared, slow clock so
-    // everything stays in sync instead of each accessory drifting independently.
+    // Gesamtbewegung: Schweben, Neigen und Skalieren über einen gemeinsamen
+    // langsamen Takt, damit nichts unabhängig wegdriftet.
     val motion = rememberInfiniteTransition(label = "cody-motion")
     val bobPhase by motion.animateFloat(
         initialValue = 0f, targetValue = (2 * Math.PI).toFloat(),
@@ -111,7 +111,7 @@ fun CodyCharacter(character: CharacterState, modifier: Modifier = Modifier) {
     val lookY by animateFloatAsState(character.lookY, tween(500), label = "lookY")
     val coreGlow by animateFloatAsState(coreGlowTarget(vs, character.audioAmplitude), tween(150), label = "coreGlow")
 
-    // Blinking only applies to the default oval eyes — a natural, irregular timer.
+    // Blinzeln gilt nur für die ovalen Standardaugen — natürlicher, unregelmäßiger Timer.
     var eyeOpen by remember { mutableFloatStateOf(1f) }
     LaunchedEffect(vs) {
         if (eyeShapeFor(vs) != EyeShape.OVAL) {
@@ -174,10 +174,8 @@ private fun bobAmplitude(state: CharacterVisualState): Float = when (state) {
 }
 
 private fun coreGlowTarget(state: CharacterVisualState, audioAmplitude: Float): Float = when (state) {
-    // Real playback amplitude (from VoicePlayer's Visualizer) pulses the core with the
-    // voice when available; audioAmplitude stays 0 everywhere else, so this falls back
-    // to the original flat glow whenever there's no live signal (Visualizer unavailable,
-    // or any non-SPEAKING state).
+    // Echte Playback-Amplitude aus VoicePlayer pulsiert den Kern mit der Stimme,
+    // wenn verfügbar. Sonst bleibt die ursprüngliche ruhige Leuchtanimation aktiv.
     CharacterVisualState.SPEAKING -> if (audioAmplitude > 0.02f) (0.5f + audioAmplitude * 0.5f).coerceIn(0.3f, 1f) else 1f
     CharacterVisualState.LISTENING -> 1f
     CharacterVisualState.WORKING, CharacterVisualState.THINKING -> 0.75f
@@ -216,9 +214,8 @@ private fun DrawScope.drawCody(
     val cx = w / 2f
 
     translate(top = bob) {
-        // --- floating hands (drawn first, so the body overlaps their inner edge) ---
-        // Sized off `w` like everything else here, not fixed px — a fixed size looked
-        // fine at the old 200dp character but read as barely-there once it grew to 300dp.
+        // --- schwebende Hände (zuerst gezeichnet, damit der Körper die Innenkante überlappt) ---
+        // Wie alles hier relativ zu `w`, nicht in festen Pixeln.
         val handY = h * 0.67f
         val handW = w * 0.095f
         val handH = w * 0.145f
@@ -232,12 +229,12 @@ private fun DrawScope.drawCody(
             )
         }
 
-        // --- body ---
+        // --- Körper ---
         val bodyTopLeft = Offset(cx - w * 0.17f, h * 0.58f)
         val bodySize = Size(w * 0.34f, h * 0.28f)
         drawRoundRect(ANTHRACITE, topLeft = bodyTopLeft, size = bodySize, cornerRadius = CornerRadius(w * 0.15f, w * 0.15f))
 
-        // core — a glowing ring, not a filled disc
+        // Kern — leuchtender Ring, keine gefüllte Scheibe
         val coreCenter = Offset(cx, h * 0.72f)
         val coreRadius = w * 0.065f
         drawCircle(accent.copy(alpha = 0.12f * coreGlow), radius = coreRadius * 2.4f, center = coreCenter)
@@ -249,13 +246,13 @@ private fun DrawScope.drawCody(
             style = Stroke(width = w * 0.014f),
         )
 
-        // --- head (large, dome-shaped — most of the silhouette) ---
+        // --- Kopf (groß und kuppelförmig, prägt die Silhouette) ---
         val headTopLeft = Offset(cx - w * 0.33f, h * 0.10f)
         val headSize = Size(w * 0.66f, h * 0.48f)
         val headRadius = CornerRadius(w * 0.30f, w * 0.30f)
         drawRoundRect(ANTHRACITE, topLeft = headTopLeft, size = headSize, cornerRadius = headRadius)
 
-        // side accent arc — small glowing bracket on the right of the head
+        // Seitlicher Akzentbogen — kleine leuchtende Klammer rechts am Kopf
         val arcRect = Offset(cx + w * 0.24f, h * 0.24f)
         drawArc(
             accent.copy(alpha = 0.85f),
@@ -267,13 +264,13 @@ private fun DrawScope.drawCody(
             style = Stroke(width = w * 0.012f),
         )
 
-        // face-plate: darker glass visor inset within the head
+        // Gesichtsscheibe: dunkler Glas-Visor im Kopf
         val faceMargin = w * 0.06f
         val faceTopLeft = Offset(headTopLeft.x + faceMargin, headTopLeft.y + faceMargin * 1.3f)
         val faceSize = Size(headSize.width - faceMargin * 2, headSize.height - faceMargin * 2.1f)
         drawRoundRect(FACE_PLATE, topLeft = faceTopLeft, size = faceSize, cornerRadius = CornerRadius(w * 0.20f, w * 0.20f))
 
-        // --- eyes ---
+        // --- Augen ---
         val eyeCy = faceTopLeft.y + faceSize.height * 0.48f + lookY * h * 0.025f
         val eyeDx = w * 0.115f + lookX * w * 0.02f
         listOf(-1f, 1f).forEach { side ->
@@ -287,7 +284,7 @@ private fun DrawScope.drawEye(center: Offset, w: Float, accent: Color, shape: Ey
     val eyeW = w * 0.075f
     val eyeH = w * 0.11f
 
-    // soft glow behind every eye shape
+    // weiches Leuchten hinter jeder Augenform
     drawCircle(accent.copy(alpha = 0.16f), radius = eyeW * 1.7f, center = center)
 
     when (shape) {

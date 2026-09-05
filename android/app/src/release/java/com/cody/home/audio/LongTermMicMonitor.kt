@@ -3,12 +3,10 @@ package com.cody.home.audio
 import android.content.Context
 
 /**
- * Release no-op counterpart to the debug-only LongTermMicMonitor
- * (app/src/debug/java/com/cody/home/audio/LongTermMicMonitor.kt).
- * Same public API, empty body — lets MainActivity call
- * LongTermMicMonitor.start()/stop() unconditionally in both build
- * variants without pulling WorkManager (a debugImplementation-only
- * dependency) into the release classpath.
+ * Release-Leerlauf-Gegenstück zur Nur-Debug-Implementierung von LongTermMicMonitor.
+ * Gleiche öffentliche API, leerer Body: So kann MainActivity start()/stop()
+ * in beiden Build-Varianten aufrufen, ohne WorkManager in den Release-Classpath
+ * zu ziehen.
  */
 object LongTermMicMonitor {
     fun start(context: Context) = Unit

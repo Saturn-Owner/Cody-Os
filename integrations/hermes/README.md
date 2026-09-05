@@ -1,54 +1,65 @@
 # CodyOS Hermes Integration
 
-Generic public integration layer between a user-owned Hermes installation and CodyOS/Cody Home Gateway.
+Generische öffentliche Integrationsschicht zwischen einer nutzereigenen
+Hermes-Installation und dem Cody Home Gateway.
 
-This package does **not** contain a Hermes agent, memory, model provider, tools, skills, sessions, or personal data. It talks to a Hermes-compatible HTTP/SSE API that the user configures locally.
+Dieses Paket enthält **keinen** Hermes-Agenten, keine Memory, keinen
+Model-Provider, keine Tools, Skills, Sessions oder persönlichen Daten. Es spricht
+mit einer Hermes-kompatiblen HTTP/SSE-API, die der Nutzer lokal konfiguriert.
 
-## Chosen architecture
+## Gewählte Architektur
 
-Use Hermes' existing API surface:
+Genutzt wird die vorhandene Hermes-API:
 
 - `GET /health`
 - `GET /api/sessions`
 - `POST /api/sessions`
 - `POST /api/sessions/{session_id}/chat/stream`
 
-This avoids a Hermes fork and avoids core patches. Hermes' official plugin system exists (`plugin.yaml` plus `register(ctx)`, or pip entry point `hermes_agent.plugins`), but CodyOS does not need a plugin for the first public integration because the API server already exposes the required agent invocation path.
+So vermeiden wir einen Hermes-Fork und Core-Patches. Hermes besitzt ein
+offizielles Plugin-System (`plugin.yaml` plus `register(ctx)` oder pip
+Entry-Point `hermes_agent.plugins`), aber für die erste öffentliche Integration
+braucht CodyOS kein Plugin, weil der API-Server den nötigen Agenten-Aufrufpfad
+bereits bereitstellt.
 
-## What is supported
+## Unterstützt
 
-- Dedicated CodyOS conversation/session
-- Text requests
-- Tool lifecycle events when Hermes emits them
-- Task status events when Hermes emits them
-- Model/router status events when Hermes emits them
-- Notifications when Hermes emits them
-- Approval events are forwarded only; CodyOS must not bypass Hermes approval logic
-- Character-state mapping: `IDLE`, `THINKING`, `WORKING`, `SPEAKING`, `SUCCESS`, `ERROR`, `APPROVAL_REQUIRED`
-- Voice pipeline can be initiated by the gateway; STT/TTS remain backend-side Hermes components
+- eigene CodyOS-Conversation/-Session
+- Textanfragen
+- Tool-Lifecycle-Events, wenn Hermes sie ausgibt
+- Task-Status-Events, wenn Hermes sie ausgibt
+- Model-/Router-Status-Events, wenn Hermes sie ausgibt
+- Notifications, wenn Hermes sie ausgibt
+- Approval-Events werden nur weitergereicht; CodyOS darf Hermes'
+  Approval-Logik nicht umgehen
+- Character-State-Mapping: `IDLE`, `THINKING`, `WORKING`, `SPEAKING`,
+  `SUCCESS`, `ERROR`, `APPROVAL_REQUIRED`
+- Voice-Pipeline kann vom Gateway gestartet werden; STT/TTS bleiben
+  Backend-seitige Hermes-Komponenten
 
-## Install
+## Installation
 
-Copy this directory to:
+Kopiere dieses Verzeichnis nach:
 
 ```text
 ~/CodyHome-Public/integrations/hermes/
 ```
 
-Install dependencies in the same Python environment as the gateway or add this directory to `PYTHONPATH`.
+Installiere Abhängigkeiten in derselben Python-Umgebung wie das Gateway oder
+füge dieses Verzeichnis zu `PYTHONPATH` hinzu.
 
 ```bash
 cp config.example.env .env
-# edit .env locally; never commit real secrets
+# .env lokal bearbeiten; echte Secrets niemals committen
 ```
 
-## Security
+## Sicherheit
 
-Do not publish:
+Nicht veröffentlichen:
 
-- personal Hermes config
+- persönliche Hermes-Konfiguration
 - SOUL/memory/workspace/sessions
-- provider/API keys
-- Google credentials
-- device secrets or pairing codes
-- private domains/IPs
+- Provider-/API-Keys
+- Google-Zugangsdaten
+- Geräte-Secrets oder Pairing-Codes
+- private Domains/IPs

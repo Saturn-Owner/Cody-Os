@@ -1,13 +1,20 @@
-# Public Gateway Notes
+# Hinweise zum Public Gateway
 
-This directory is intended to be copied into `~/CodyHome-Public/gateway/`.
+Dieses Verzeichnis ist für die öffentliche CodyOS-Gateway-Komponente gedacht.
 
-The gateway talks to a generic Hermes-compatible HTTP API configured by environment variables. It intentionally excludes personal Hermes data such as SOUL, memory, sessions, workspace, Google credentials, provider keys, private domains/IPs, device secrets, Caddy config, and systemd secrets.
+Das Gateway spricht mit einer generischen Hermes-kompatiblen HTTP-API, die über
+Umgebungsvariablen konfiguriert wird. Persönliche Hermes-Daten wie SOUL, Memory,
+Sessions, Workspace, Google-Zugangsdaten, Provider-Keys, private Domains/IPs,
+Geräte-Secrets, Caddy-Konfiguration und systemd-Secrets sind absichtlich nicht
+enthalten.
 
-Voice V1 is turn-based and uses existing backend-side Hermes components when available:
+Voice V1 ist turn-basiert und nutzt vorhandene Backend-seitige Hermes-
+Komponenten, wenn sie verfügbar sind:
 
 - STT: `tools.transcription_tools.transcribe_audio()`
-- Cody request: `HermesClient.stream_message()`
-- TTS: `tools.tts_tool.text_to_speech_tool()` with provider `edge`
+- Cody-Anfrage: `HermesClient.stream_message()`
+- TTS: `tools.tts_tool.text_to_speech_tool()` mit Provider `edge`
 
-If those Hermes modules are not available in the runtime, `/voice` will return a server-side error until the host integrates equivalent backend components.
+Wenn diese Hermes-Module zur Laufzeit nicht verfügbar sind, liefert `/voice`
+einen serverseitigen Fehler, bis der Host äquivalente Backend-Komponenten
+integriert.

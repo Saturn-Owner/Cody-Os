@@ -1,4 +1,4 @@
 # Branding
 
-*(To be completed.)* App icon, logo, and any promotional/branding assets
-will live here once finalized.
+*(Noch auszufüllen.)* App-Icon, Logo und weitere Branding-/Promo-Assets werden
+hier abgelegt, sobald sie final sind.

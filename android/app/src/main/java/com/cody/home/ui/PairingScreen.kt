@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Shown once, before any credentials are stored: enter the pairing code shown
- * by `python -m cody_home_gateway.create_pairing_code` on the VPS side.
+ * Wird angezeigt, bevor Zugangsdaten gespeichert sind: Hier wird der Pairing-Code
+ * eingegeben, den `python -m cody_home_gateway.create_pairing_code` serverseitig
+ * erzeugt.
  */
 @Composable
 fun PairingScreen(

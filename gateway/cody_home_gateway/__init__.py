@@ -1,6 +1,6 @@
 """Cody Home Gateway V1.
 
-Transport adapter between Cody Home clients and the existing Hermes/Cody brain.
+Transportadapter zwischen Cody-Home-Clients und einem bestehenden Hermes-/Cody-Backend.
 """
 
 __version__ = "0.1.0"

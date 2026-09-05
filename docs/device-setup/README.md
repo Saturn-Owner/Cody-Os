@@ -1,57 +1,53 @@
-# Device Setup
+# Geräte-Setup
 
-## Supported Device
+## Unterstütztes Gerät
 
 | | |
 |---|---|
-| Device | Amazon Echo Show 5, 1st Generation (2019) |
+| Gerät | Amazon Echo Show 5, 1. Generation (2019) |
 | Codename | `checkers` |
-| Model | H23K37 |
+| Modell | H23K37 |
 | SoC | MediaTek MT8163 |
-| Target OS | LineageOS 18.1 (Android 11), unofficial community build |
+| Zielsystem | LineageOS 18.1 (Android 11), inoffizieller Community-Build |
 
-No other Echo Show model or generation is currently supported. The unlock
-exploit and kernel/device tree this relies on are specific to this exact
-hardware revision.
+Aktuell wird kein anderes Echo-Show-Modell unterstützt. Unlock-Exploit,
+Kernel und Device Tree beziehen sich auf genau diese Hardware-Revision.
 
-> **This process unlocks the bootloader and replaces the stock Fire OS with
-> a community-built LineageOS image. It carries real risk of permanently
-> bricking the device, voids any warranty, and is not reversible back to a
-> fully-functioning stock state in every case.** Only proceed on hardware
-> you're willing to lose. None of the following is Cody Home's own tooling —
-> all of it is third-party, upstream work this project depends on but does
-> not maintain or vendor.
+> **Dieser Prozess entsperrt den Bootloader und ersetzt das originale Fire OS
+> durch ein Community-LineageOS. Dabei besteht ein reales Risiko, das Gerät
+> dauerhaft unbrauchbar zu machen; Garantieansprüche können verloren gehen und
+> eine vollständige Rückkehr zum Stock-Zustand ist nicht immer möglich.** Nutze
+> nur Hardware, deren Verlust du verschmerzen kannst. Die Unlock-Werkzeuge sind
+> Drittanbieter-/Upstream-Projekte und werden hier nicht mitgeliefert.
 
 ## Bootloader Unlock
 
-*(To be completed.)* The reference unlock path uses the community
-`amonet`-based exploit for this device family. This repository does not
-include that tool or any device-specific binaries (unlock codes, bootloader
-payloads) — these are per-device and/or third-party, and are documented
-upstream, not here. This section will link to the exact upstream guide and
-tool release once finalized.
+*(Noch auszufüllen.)* Der Referenzweg nutzt den Community-Exploit auf Basis von
+`amonet` für diese Gerätefamilie. Dieses Repository enthält weder das Tool noch
+gerätespezifische Binärdaten wie Unlock-Codes oder Bootloader-Payloads.
+Stattdessen wird später auf die passenden Upstream-Anleitungen verlinkt.
 
 ## Recovery
 
-*(To be completed.)* Installing a custom recovery (TWRP) is the usual next
-step after an unlocked bootloader, used to flash the LineageOS build itself.
-Will link to the upstream TWRP source/build for this device.
+*(Noch auszufüllen.)* Nach dem entsperrten Bootloader folgt üblicherweise ein
+Custom Recovery wie TWRP, um LineageOS zu flashen. Die passenden Upstream-Links
+werden ergänzt.
 
 ## LineageOS
 
-*(To be completed.)* This project targets an **unofficial** LineageOS 18.1
-build for `checkers` — there is no official LineageOS support for this
-device. Will link to the upstream device tree, kernel source, and where to
-obtain a build.
+*(Noch auszufüllen.)* Dieses Projekt zielt auf einen **inoffiziellen**
+LineageOS-18.1-Build für `checkers`. Offiziellen LineageOS-Support für dieses
+Gerät gibt es nicht. Links zu Device Tree, Kernel-Quellen und Builds werden
+ergänzt.
 
-## Cody Home Installation
+## Cody-Home-Installation
 
-Once LineageOS is running on the device, installing Cody Home itself is just
-installing an APK — see [`../installation/`](../installation/) for that part.
+Sobald LineageOS auf dem Gerät läuft, ist Cody Home selbst eine normale
+APK-Installation — siehe [`../installation/`](../installation/).
 
-## Known hardware caveat
+## Bekannte Hardware-Einschränkung
 
-The physical microphone does not currently work reliably under LineageOS on
-this hardware — see the main [README](../../README.md#status) and
-[`../architecture/`](../architecture/) for what's been diagnosed so far. This
-does not block installing or using Cody Home for text-based interaction.
+Das physische Mikrofon funktioniert unter LineageOS auf dieser Hardware aktuell
+nicht zuverlässig. Siehe [README](../../README.md#status) und
+[`../architecture/`](../architecture/). Textbasierte Nutzung von Cody Home ist
+davon nicht blockiert.

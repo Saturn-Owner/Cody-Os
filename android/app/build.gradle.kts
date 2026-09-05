@@ -6,18 +6,17 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-// Local-only signing key for installing release-type builds on the Echo for testing —
-// self-signed, not for distribution. Not present -> release build stays unsigned/uninstallable,
-// which is fine for CI-style builds that don't need to land on the device.
+// Nur lokaler Signierschlüssel für Release-artige Test-Builds auf dem Echo.
+// Selbstsigniert, nicht für Distribution. Fehlt er, bleibt der Release-Build
+// unsigniert/nicht installierbar; für CI-artige Builds ist das in Ordnung.
 val keystorePropsFile = rootProject.file("keystore/keystore.properties")
 val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) keystorePropsFile.inputStream().use { load(it) }
 }
 
-// Gateway endpoint — never hardcoded. Copy gradle.properties.example to
-// gradle.properties (gitignored) and fill in your own Gateway's URLs; the
-// placeholders below let the project still build out of the box for anyone
-// who hasn't set that up yet — see GatewayConfig.kt for where these land.
+// Gateway-Endpunkt — nie fest verdrahten. Kopiere gradle.properties.example nach
+// gradle.properties (gitignored) und trage deine Gateway-URLs ein. Die
+// Platzhalter unten lassen das Projekt auch ohne lokale Konfiguration bauen.
 val gatewayHttpsUrl = (project.findProperty("CODY_HOME_HTTPS_URL") as String?)
     ?: "https://your-domain.example/cody-home"
 val gatewayWssUrl = (project.findProperty("CODY_HOME_WSS_URL") as String?)
@@ -29,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "com.cody.home"
-        // Echo Show 5 (checkers) runs LineageOS 18.1 = Android 11 = API 30.
+        // Echo Show 5 (checkers) läuft mit LineageOS 18.1 = Android 11 = API 30.
         minSdk = 30
         targetSdk = 30
         versionCode = 1
@@ -60,9 +59,9 @@ android {
     }
 
     lint {
-        // Play-Store-only policy check — irrelevant here, this app is never
-        // distributed through Play. targetSdk=30 is deliberate: it matches the
-        // Echo Show 5's actual Android 11, not a value to "catch up" blindly.
+        // Reine Play-Store-Policy-Prüfung — hier irrelevant, weil diese App
+        // nicht über Play verteilt wird. targetSdk=30 ist bewusst gewählt:
+        // Es entspricht Android 11 auf dem Echo Show 5.
         disable += "ExpiredTargetSdkVersion"
     }
 
@@ -90,8 +89,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    // Network layer: REST + WebSocket to the Cody Gateway.
+    // Netzwerk-Layer: REST + WebSocket zum Cody Home Gateway.
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    // Encrypted on-device storage for the device_id/device_secret pair.
+    // Verschlüsselte Gerätespeicherung für das device_id/device_secret-Paar.
     implementation("androidx.security:security-crypto:1.0.0")
 }

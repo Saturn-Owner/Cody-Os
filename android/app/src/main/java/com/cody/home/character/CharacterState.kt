@@ -3,55 +3,47 @@ package com.cody.home.character
 import com.cody.home.state.CodyState
 import com.cody.home.state.CodyUiState
 
-/** Cody's own mood, layered on top of [CodyState] — cosmetic, not functional yet. */
+/** Codys Stimmung zusätzlich zu [CodyState] — aktuell kosmetisch, nicht funktional. */
 enum class CodyEmotion { NEUTRAL, FOCUSED, HAPPY, CONCERNED, CURIOUS, SAD }
 
-/** Mirrors [CodyState] plus a display-only SLEEPING state used for Ambient mode. */
+/** Spiegelt [CodyState] plus den reinen Anzeigezustand SLEEPING für den Ambient-Modus. */
 enum class CharacterVisualState { IDLE, CONNECTING, LISTENING, THINKING, WORKING, SPEAKING, SUCCESS, ERROR, OFFLINE, APPROVAL_REQUIRED, SLEEPING }
 
 /**
- * Everything the character rendering needs to know, decoupled from [CodyUiState].
- * This is the `CharacterRenderState` from the design brief — named [CharacterState]
- * here since it predates that brief, same shape:
+ * Alles, was das Character-Rendering wissen muss, entkoppelt von [CodyUiState].
+ * Das entspricht dem `CharacterRenderState` aus dem Design-Briefing; hier heißt
+ * es [CharacterState], weil der Name älter ist:
  *   state (→ [visualState]), emotion, lookX, lookY, activityLevel, audioAmplitude
- * plus two fields the brief's example didn't list but the behavior spec needs:
- * [blinkTrigger] (fires one deliberate blink, e.g. on a state change) and
- * [attention] (posture "alertness", used for the idle/listening/offline slump).
+ * plus zwei Felder, die das Beispiel nicht enthielt, die das Verhalten aber
+ * braucht: [blinkTrigger] für bewusstes Blinzeln und [attention] für die
+ * aufrechte/aufmerksame Haltung.
  *
- * This is the seam for a future Rive character — see RIVE_MIGRATION.md-style
- * notes in [CharacterController] for exactly which fields map to which inputs.
+ * Das ist die Nahtstelle für einen späteren Rive-Character; siehe die Notizen
+ * in [CharacterController] zum Mapping der Felder.
  */
 data class CharacterState(
     val visualState: CharacterVisualState,
-    val lookX: Float = 0f,       // -1f (left, toward the info cards) .. 1f (right)
-    val lookY: Float = 0f,       // -1f (up) .. 1f (down)
-    val audioAmplitude: Float = 0f, // 0f..1f, driven by TTS output later
-    val activityLevel: Float = 0f,  // 0f..1f, general "how busy" intensity
+    val lookX: Float = 0f,       // -1f (links, Richtung Infokarten) .. 1f (rechts)
+    val lookY: Float = 0f,       // -1f (oben) .. 1f (unten)
+    val audioAmplitude: Float = 0f, // 0f..1f, später durch TTS-Ausgabe gesteuert
+    val activityLevel: Float = 0f,  // 0f..1f, allgemeine Aktivitätsintensität
     val emotion: CodyEmotion = CodyEmotion.NEUTRAL,
-    val blinkTrigger: Long = 0L,    // incrementing this fires one blink
-    val attention: Float = 0f,      // 0f..1f, how "alert" the posture is
+    val blinkTrigger: Long = 0L,    // Erhöhen löst ein Blinzeln aus
+    val attention: Float = 0f,      // 0f..1f, wie aufmerksam die Haltung ist
 )
 
 /**
- * Derives the character's animation parameters from the app's single source of
- * truth ([CodyUiState]) plus whether Ambient mode is active.
+ * Leitet die Animationsparameter des Characters aus der einzigen UI-Wahrheit
+ * ([CodyUiState]) und dem Ambient-Modus ab.
  *
- * ---- Rive migration plan (not implemented yet) ----
- * When a real Rive asset exists, `RiveCharacterRenderer` takes the exact same
- * [CharacterState] this produces and, instead of driving a Canvas, sets Rive
- * State Machine inputs on every recomposition:
- *   - visualState   → a Rive "State" number/enum input selecting the state-machine branch
- *   - lookX, lookY  → two Rive number inputs driving eye-target bones
- *   - audioAmplitude→ a Rive number input driving a mouth/wave blend
- *   - activityLevel → a Rive number input scaling motion speed/intensity
- *   - emotion       → a Rive number/enum input selecting an eye-shape blend
- *   - blinkTrigger  → a Rive boolean "trigger" input, fired on change
- *   - attention     → a Rive number input driving posture lean/scale
- * No caller of [derive] or of `CodyCharacter(character = ...)` would need to
- * change — only the composable's internals get swapped out.
+ * ---- Rive-Migrationsplan (noch nicht implementiert) ----
+ * Sobald ein echtes Rive-Asset existiert, nutzt `RiveCharacterRenderer` denselben
+ * [CharacterState] und setzt statt Canvas-Rendering die passenden Rive-
+ * State-Machine-Inputs. Aufrufer von [derive] oder `CodyCharacter(...)` müssten
+ * dafür nicht geändert werden.
  */
 object CharacterController {
-    /** [liveAudioAmplitude] (0f..1f) is only meaningful while SPEAKING — see [CharacterState.audioAmplitude]. */
+    /** [liveAudioAmplitude] (0f..1f) ist nur während SPEAKING relevant. */
     fun derive(uiState: CodyUiState, isAmbient: Boolean, liveAudioAmplitude: Float = 0f): CharacterState {
         if (isAmbient) {
             return CharacterState(visualState = CharacterVisualState.SLEEPING, attention = 0f)

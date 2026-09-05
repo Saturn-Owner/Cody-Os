@@ -7,24 +7,18 @@ import android.content.Intent
 import android.os.SystemClock
 
 /**
- * DEBUG-only overnight mic-degradation monitor (2026-09-04, revised after
- * WorkManager/JobScheduler proved unreliable on this ROM — a forced
- * `cmd jobscheduler run` was accepted but never actually invoked the
- * worker). Uses AlarmManager.setExactAndAllowWhileIdle() directly instead:
- * the lower-level, Doze-aware API this is built for, with state directly
- * inspectable via `adb shell dumpsys alarm`.
+ * Nur-Debug-Übernacht-Mikrofonmonitor. WorkManager/JobScheduler war auf diesem
+ * ROM unzuverlässig: Ein erzwungenes `cmd jobscheduler run` wurde akzeptiert,
+ * rief den Worker aber nicht wirklich auf. Stattdessen nutzt das hier direkt
+ * AlarmManager.setExactAndAllowWhileIdle(), eine passendere Doze-aware API.
  *
- * [start] schedules the first wakeup; [MicLongTermAlarmReceiver] (manifest-
- * registered, so it survives process death) does one measurement via
- * [MicLongTermCapture] and calls [scheduleNext] for the one after that —
- * a fresh one-shot exact alarm each time, not a repeating alarm, since
- * setExactAndAllowWhileIdle() only fires once by design (that's what lets
- * it wake the device from deep Doze at all). No wakelock held by this app
- * between runs, no display kept on. Never wired into a release build —
- * see the matching no-op stub in src/release.
+ * [start] plant den ersten Wakeup. [MicLongTermAlarmReceiver] ist im Manifest
+ * registriert, überlebt Prozessende, führt per [MicLongTermCapture] eine Messung
+ * aus und plant danach den nächsten One-shot-Alarm. Zwischen Läufen hält die App
+ * keinen Wakelock und kein Display an. Release-Builds nutzen den Leerlauf-Stub.
  */
 object LongTermMicMonitor {
-    private const val INTERVAL_MS = 30 * 60 * 1000L // 30 minutes
+    private const val INTERVAL_MS = 30 * 60 * 1000L // 30 Minuten
     private const val ACTION = "com.cody.home.LONGTERM_MIC_ALARM"
     private const val REQUEST_CODE = 4201
 
@@ -42,13 +36,9 @@ object LongTermMicMonitor {
     }
 
     /**
-     * Test-only: reschedules the SAME alarm (same PendingIntent, replacing
-     * whatever was pending) to fire in [delaySeconds] instead of the full
-     * 30-minute interval — for validating that a genuine, hands-off
-     * AlarmManager wake actually gets real mic access, without waiting a
-     * full cycle. The receiver's normal scheduleNext() call after this
-     * fire puts it right back on the regular 30-minute cadence, so this
-     * doesn't otherwise disturb the ongoing long-term test.
+     * Nur Test: Plant denselben Alarm neu, damit er in [delaySeconds] statt nach
+     * dem vollen 30-Minuten-Intervall feuert. Danach stellt der Receiver wieder
+     * den normalen 30-Minuten-Takt her.
      */
     fun scheduleTestAlarm(context: Context, delaySeconds: Long) {
         scheduleAt(context, SystemClock.elapsedRealtime() + delaySeconds * 1000)

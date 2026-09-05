@@ -1,12 +1,18 @@
-# Hermes Plugin / Extension Notes
+# Hinweise zu Hermes-Plugins und Erweiterungen
 
-Hermes supports plugins via:
+Hermes unterstützt Plugins über:
 
-- directory plugins with `plugin.yaml` and `__init__.py` exposing `register(ctx)`
-- pip packages exposing the `hermes_agent.plugins` entry-point group
-- hooks such as `on_session_start`, `on_session_end`, `pre_tool_call`, `post_tool_call`, streaming observers, and API request hooks
-- plugin tool registration via `PluginContext.register_tool()`
+- Verzeichnis-Plugins mit `plugin.yaml` und `__init__.py`, die `register(ctx)`
+  bereitstellen
+- pip-Pakete mit der Entry-Point-Gruppe `hermes_agent.plugins`
+- Hooks wie `on_session_start`, `on_session_end`, `pre_tool_call`,
+  `post_tool_call`, Streaming-Observer und API-Request-Hooks
+- Tool-Registrierung über `PluginContext.register_tool()`
 
-CodyOS Phase 1 does not require a Hermes plugin. The API integration is safer and more portable because it uses the existing Hermes API server and avoids core patches.
+CodyOS Phase 1 benötigt kein Hermes-Plugin. Die API-Integration ist portabler
+und sicherer, weil sie den vorhandenen Hermes-API-Server nutzt und Core-Patches
+vermeidet.
 
-A future optional plugin could add richer model/router status or notification hooks if Hermes does not expose those through SSE/API in a given version.
+Ein späteres optionales Plugin könnte detailliertere Model-/Router-Statusdaten
+oder Notification-Hooks ergänzen, falls eine Hermes-Version diese nicht über
+SSE/API bereitstellt.

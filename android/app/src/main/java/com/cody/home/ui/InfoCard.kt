@@ -23,17 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Text tokens — kept in one place so every info block reads as one system. */
+/** Text-Tokens zentral, damit alle Infoblöcke wie ein gemeinsames System wirken. */
 private val LABEL_COLOR = Color(0xFF7C8996)
 private val VALUE_COLOR = Color(0xFFE8EDF2)
 
-// Card surface — intentionally very quiet: a whisper of fill, a hairline edge.
-// (Two rounds of feedback landed here: v1 had a hard 1dp stroke, v2 had no
-// card at all — this is the middle ground the design brief actually asked for.)
+// Kartenfläche — bewusst ruhig: kaum Füllung, sehr feine Kante.
+// Das ist der Mittelweg zwischen zu harter Kontur und gar keiner Karte.
 private val CARD_BG = Color(0x0FFFFFFF)     // ~6% white
 private val CARD_BORDER = Color(0x14FFFFFF) // ~8% white, 0.75dp
 
-/** Small, quiet "smart-display card" shell — icon + label row on top, content below. */
+/** Kleine, ruhige Smart-Display-Karte: oben Icon + Label, darunter Inhalt. */
 @Composable
 fun InfoCard(
     label: String,

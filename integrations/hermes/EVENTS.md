@@ -1,6 +1,6 @@
-# Event Mapping
+# Event-Mapping
 
-Known Hermes/CodyOS events:
+Bekannte Hermes-/CodyOS-Events:
 
 - `cody.message.started` → `THINKING`
 - `cody.message.delta` → `THINKING`
@@ -22,4 +22,5 @@ Known Hermes/CodyOS events:
 - `voice.tts.completed` → `SPEAKING`
 - `voice.audio.ready` → `SPEAKING`
 
-Approval events are display/transport events only. Approval resolution remains owned by Hermes.
+Approval-Events sind nur Anzeige-/Transport-Events. Die eigentliche
+Genehmigungslogik bleibt bei Hermes.

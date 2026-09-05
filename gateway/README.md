@@ -1,43 +1,48 @@
 # Cody Home Gateway
 
-Public-ready FastAPI transport gateway for CodyOS-style clients. The gateway is only an adapter: it does not contain an agent, memory, model provider, or provider keys. It forwards authenticated device requests to a configured Hermes-compatible backend.
+Öffentlich nutzbares FastAPI-Transport-Gateway für CodyOS-Clients. Das Gateway ist nur
+ein Adapter: Es enthält keinen Agenten, keine Memory, keinen Model-Provider und
+keine Provider-Keys. Es leitet authentifizierte Geräteanfragen an ein
+konfiguriertes Hermes-kompatibles Backend weiter.
 
-## Features
+## Funktionen
 
 - `GET /health`
 - `POST /pair`
 - `POST /message`
 - `POST /voice`
 - `WS /ws`
-- Device pairing and per-device credentials
-- HMAC-SHA256 request signing
-- Timestamp and nonce replay protection
-- Versioned JSON event protocol
-- Turn-based Voice V1: audio upload → STT → Hermes backend → TTS → MP3 response
+- Geräte-Pairing und Zugangsdaten pro Gerät
+- HMAC-SHA256-Signaturen für Anfragen
+- Replay-Schutz über Zeitstempel und Nonce
+- Versioniertes JSON-Event-Protokoll
+- Turn-basierte Voice V1: Audio-Upload → STT → Hermes-Backend → TTS → MP3-Antwort
 
-## Quick start
+## Schnellstart
 
 ```bash
 python -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# edit .env locally; never commit real secrets
+# .env lokal bearbeiten; echte Secrets niemals committen
 ./scripts/start_gateway.sh
 ```
 
-Create one pairing code:
+Einmaligen Pairing-Code erzeugen:
 
 ```bash
 ./scripts/create_pairing_code.sh
 ```
 
-Run tests:
+Tests ausführen:
 
 ```bash
 ./scripts/run_tests.sh
 ```
 
-## Security notes
+## Sicherheitshinweise
 
-Never commit `.env`, `state/`, device secrets, pairing codes, backend tokens, personal agent data, domains, IPs, sessions, memory, or workspace files.
+Niemals `.env`, `state/`, Geräte-Secrets, Pairing-Codes, Backend-Tokens,
+persönliche Agentendaten, Domains, IPs, Sessions, Memory oder Workspace-Dateien
+committen.

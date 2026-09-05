@@ -12,9 +12,9 @@ data class DeviceCredentials(
 )
 
 /**
- * Stores the paired device's credentials in an EncryptedSharedPreferences file
- * (AES256-GCM, key material in the Android Keystore) — never in plain
- * SharedPreferences, never logged.
+ * Speichert die Zugangsdaten des gepairten Geräts in EncryptedSharedPreferences
+ * (AES256-GCM, Schlüsselmaterial im Android Keystore) — niemals in normalen
+ * SharedPreferences und niemals in Logs.
  */
 class CredentialStore(context: Context) {
 

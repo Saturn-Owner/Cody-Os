@@ -1,5 +1,5 @@
-# Scripts
+# Skripte
 
-*(To be completed.)* Build/release helper scripts will live here as they're
-needed (e.g. a signed-release build helper, a device-install helper). Empty
-for now — the Android build itself needs nothing beyond standard Gradle.
+*(Noch auszufüllen.)* Hilfsskripte für Build und Release liegen später hier,
+zum Beispiel für signierte Releases oder Geräteinstallation. Aktuell ist dieser
+Ordner bewusst leer; der Android-Build braucht nur Standard-Gradle.

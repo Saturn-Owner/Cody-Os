@@ -51,8 +51,8 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * The main "awake" dashboard: compact smart-display cards on the left, Cody
- * — now a proper character, not a text label — taking the right third.
+ * Das wache Haupt-Dashboard: links kompakte Smart-Display-Karten, rechts Cody
+ * als echter Character statt als Textlabel.
  */
 @Composable
 fun DashboardScreen(
@@ -123,7 +123,7 @@ fun DashboardScreen(
     }
 }
 
-/** V1 voice entry point — tap to start listening, tap again to stop and send. */
+/** Voice-V1-Einstieg: Tippen startet Zuhören, erneutes Tippen stoppt und sendet. */
 @Composable
 private fun MicButton(isRecording: Boolean, onTap: () -> Unit, modifier: Modifier = Modifier) {
     val background = if (isRecording) Color(0xFFE0716A) else Color(0x1FFFFFFF)
@@ -146,14 +146,14 @@ private fun MicGlyph(color: Color, size: androidx.compose.ui.unit.Dp = 20.dp) {
     androidx.compose.foundation.Canvas(Modifier.size(size)) {
         val w = this.size.width
         val h = this.size.height
-        // capsule body
+        // Kapsel-Körper
         drawRoundRect(
             color,
             topLeft = androidx.compose.ui.geometry.Offset(w * 0.32f, 0f),
             size = androidx.compose.ui.geometry.Size(w * 0.36f, h * 0.55f),
             cornerRadius = androidx.compose.ui.geometry.CornerRadius(w * 0.18f, w * 0.18f),
         )
-        // stand
+        // Standfuß
         drawArc(
             color,
             startAngle = 0f, sweepAngle = 180f, useCenter = false,
@@ -262,9 +262,8 @@ private fun ActivityContent(uiState: CodyUiState) {
         val animatedProgress by animateFloatAsState(uiState.taskProgress ?: 0f, tween(400), label = "progress")
         if (uiState.taskProgress != null) {
             Spacer(Modifier.height(6.dp))
-            // Hand-rolled instead of Material3's LinearProgressIndicator: that one draws a
-            // "stop" dot fixed at the track's end regardless of progress, which reads as
-            // "always nearly full" at low values — this starts genuinely empty at 0.
+            // Eigene Variante statt Material3 LinearProgressIndicator: dessen
+            // Endpunkt wirkt bei kleinen Werten schon fast gefüllt.
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
